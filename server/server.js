@@ -1,34 +1,32 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
-const errorHandler = require('./middlewares/error.middleware');
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import courseRoutes from './routes/course.routes.js';
+import lessonRoutes from './routes/lesson.routes.js';
+import healthRoutes from './routes/health.routes.js';
+import { errorHandler } from './middlewares/error.middleware.js';
 
-// Initialize Express app
+dotenv.config();
+
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Connect to Database
-connectDB();
-
-// Middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Database connection
+connectDB();
+
 // Routes
-app.use('/api/courses', require('./routes/course.routes'));
-app.use('/api/lessons', require('./routes/lesson.routes'));
-app.use('/api/youtube', require('./routes/youtube.routes'));
+app.use('/health', healthRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/lessons', lessonRoutes);
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Server is healthy' });
-});
-
-// Centralized Error Handling Middleware
+// Error Middleware
 app.use(errorHandler);
 
-// Start server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

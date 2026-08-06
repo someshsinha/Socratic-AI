@@ -1,11 +1,21 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const lessonSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  objectives: [String],
-  content: { type: [mongoose.Schema.Types.Mixed], required: true }, // block array, see Phase 2
-  isEnriched: { type: Boolean, default: false }, // true once Stage 2 generation has run
-  module: { type: mongoose.Schema.Types.ObjectId, ref: "Module" }
-}, { timestamps: true });
+const lessonSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    objectives: [String],
 
-module.exports = mongoose.model('Lesson', lessonSchema);
+    // TODO: RESTORE BEFORE PRODUCTION - Set required: true once Stage 2 generation runs
+    content: {
+      type: [mongoose.Schema.Types.Mixed],
+      required: false,
+      default: []
+    },
+
+    isEnriched: { type: Boolean, default: false },
+    module: { type: mongoose.Schema.Types.ObjectId, ref: 'Module' },
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model('Lesson', lessonSchema);

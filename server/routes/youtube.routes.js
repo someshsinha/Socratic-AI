@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import * as youtubeService from '../services/youtubeService.js';
+
 const router = express.Router();
-const youtubeService = require('../services/youtubeService');
 
 router.get('/search', async (req, res, next) => {
   try {
@@ -12,4 +13,4 @@ router.get('/search', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;

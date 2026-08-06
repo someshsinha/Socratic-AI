@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import * as courseController from '../controllers/course.controller.js';
+import validate from '../middlewares/validate.middleware.js';
+import { body } from 'express-validator';
+
 const router = express.Router();
-const courseController = require('../controllers/course.controller');
-const validate = require('../middlewares/validate.middleware');
-const { body } = require('express-validator');
 
 router.get('/', courseController.getCourses);
 
@@ -17,9 +18,8 @@ router.get('/:id', courseController.getCourseById);
 
 // Create course with validation to demonstrate validate.middleware.js
 router.post('/', [
-  body('title').notEmpty().withMessage('Title is required'),
-  body('creator').notEmpty().withMessage('Creator is required'),
+  body('topic').notEmpty().withMessage('Topic is required'),
   validate
 ], courseController.createCourse);
 
-module.exports = router;
+export default router;
