@@ -51,7 +51,7 @@ export const generateCoursePrompt = async (topic) => {
       attempts++;
       const ai = getAiClient();
       const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash',
+        model: 'gemini-3.5-flash-lite',
         contents: currentPrompt,
       });
 
@@ -83,12 +83,29 @@ export const generateLessonPrompt = async (courseTitle, moduleTitle, lessonTitle
 
     Return raw JSON ONLY. Do NOT include markdown fences (\`\`\`json), explanations, or extra text.
 
+    Rules for code blocks:
+    - Only include content blocks of type "code" if the lesson topic or course is explicitly related to computer science, programming, software engineering, databases, algorithms, or coding.
+    - For non-programming topics (such as theoretical physics, chemistry, mathematics, history, literature, philosophy, exam syllabi like JEE/NEET, etc.), omit code blocks entirely. Focus instead on detailed paragraphs, textual formulas, and conceptual MCQs.
+
+    Rules for formatting inside "paragraph" block text (applies to ALL topics, not just technical ones):
+    - Write paragraph text as Markdown, not plain prose. Use these conventions deliberately, not sparingly:
+    - Bold key terms and definitions on first use: **quantum entanglement**, **Treaty of Westphalia**, **derivative**.
+    - For italic emphasis (such as foreign or technical terms like *samskaras*), always use a single asterisk directly touching the word with no spaces: *samskaras*, never * samskaras * (with spaces). If unsure, prefer using bolding (**samskaras**) for terms, as bolding is cleaner and consistently supported.
+    - Use bullet lists ("- item") or numbered lists ("1. item") whenever the content is naturally a sequence of steps, causes, properties, or exam topics — do not describe a list in a single run-on sentence.
+    - Use Markdown blockquotes ("> ...") for direct quotations (historical figures, primary sources) and for standalone definitions worth setting apart from the surrounding explanation.
+    - For inline math, wrap it in single dollar signs, e.g. "the relation $E = h\\nu$ describes...". For standalone display equations, use double dollar signs on their own line, e.g. "$$ \\alpha^2 + \\beta^2 = 1 $$".
+    - Use inline code formatting (single backticks) only for actual code identifiers, commands, or variable names referenced in prose — never for emphasis in non-technical topics.
+    - For a "Pro Tip", "Note", or "Warning" aside, use a blockquote whose first line is a bolded label, e.g. "> **Note:** ..." or "> **Pro Tip:** ...".
+
+    Rules for the "objectives" array specifically:
+    - Write each objective as plain text only, with no Markdown syntax (no asterisks, backticks, or bold) — this list renders as-is, without any formatting parser. Reserve Markdown formatting for the "paragraph" block text in "content" only.
+
     Expected JSON structure:
     {
       "title": "${lessonTitle}",
       "objectives": ["Objective 1", "Objective 2"],
       "content": [
-        { "type": "heading", "text": "Section Heading" },
+        { "type": "heading", "text": "Section Heading" } ,
         { "type": "paragraph", "text": "Detailed lesson explanation." },
         { "type": "code", "language": "javascript", "text": "// Code example if relevant" },
         { "type": "video", "query": "Targeted YouTube search query string" },
@@ -111,7 +128,7 @@ export const generateLessonPrompt = async (courseTitle, moduleTitle, lessonTitle
       attempts++;
       const ai = getAiClient();
       const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash',
+        model: 'gemini-3.5-flash-lite',
         contents: currentPrompt,
       });
 

@@ -4,6 +4,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import courseRoutes from './routes/course.routes.js';
 import lessonRoutes from './routes/lesson.routes.js';
+import youtubeRoutes from './routes/youtube.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 
@@ -22,6 +23,7 @@ connectDB();
 app.use('/health', healthRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/lessons', lessonRoutes);
+app.use('/api/youtube', youtubeRoutes);
 
 // Error Middleware
 app.use(errorHandler);

@@ -8,6 +8,7 @@ export const getLessons = async (req, res, next) => {
     const lessons = await Lesson.find({});
     res.json({ success: true, data: lessons });
   } catch (err) {
+    console.error("🔥 ERROR in getLessons:", err);
     next(err);
   }
 };
@@ -23,6 +24,7 @@ export const createLesson = async (req, res, next) => {
     });
     res.status(201).json({ success: true, data: lesson });
   } catch (err) {
+    console.error("🔥 ERROR in createLesson:", err);
     next(err);
   }
 };
@@ -59,6 +61,7 @@ export const getLessonById = async (req, res, next) => {
     );
 
     if (!aiResult.success) {
+      console.error("🔥 AI LESSON GENERATION FAILED:", aiResult.rawError);
       return res.status(500).json({
         success: false,
         error: 'Failed to generate lesson content',
@@ -84,6 +87,7 @@ export const getLessonById = async (req, res, next) => {
       data: updatedLesson,
     });
   } catch (error) {
+    console.error("🔥 CRITICAL ERROR in getLessonById:", error);
     next(error);
   }
 };

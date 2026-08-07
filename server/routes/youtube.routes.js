@@ -7,7 +7,7 @@ router.get('/search', async (req, res, next) => {
   try {
     const { q } = req.query;
     const results = await youtubeService.searchVideos(q || '');
-    res.json(results);
+    res.json({ success: true, data: results });
   } catch (err) {
     next(err);
   }
