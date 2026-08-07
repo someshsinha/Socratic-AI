@@ -1,8 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
+import Home from './pages/Home';
+import LoginRedirect from './pages/LoginRedirect';
+import SignupRedirect from './pages/SignupRedirect';
+import CourseDetail from './pages/CourseDetail';
+import LessonViewer from './pages/LessonViewer';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -16,7 +21,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       }}
     >
       <BrowserRouter>
-        <App />
+        <Routes>
+          <Route element={<App />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<LoginRedirect />} />
+            <Route path="/signup" element={<SignupRedirect />} />
+            <Route path="/course/:id" element={<CourseDetail />} />
+            <Route path="/lesson/:id" element={<LessonViewer />} />
+          </Route>
+        </Routes>
       </BrowserRouter>
     </Auth0Provider>
   </React.StrictMode>

@@ -38,6 +38,7 @@ export const getLessonById = async (req, res, next) => {
 
     // Lazy Generation: If content is already generated/enriched, return cached DB record
     if (lesson.isEnriched && lesson.content.length > 0) {
+      await lesson.populate('module');
       return res.status(200).json({ success: true, data: lesson });
     }
 
@@ -67,15 +68,20 @@ export const getLessonById = async (req, res, next) => {
 
     const { objectives, content } = aiResult.data;
 
-    // Save generated content back to MongoDB
-    lesson.objectives = objectives || [];
-    lesson.content = content || [];
-    lesson.isEnriched = true;
-    await lesson.save();
+    // Save generated content back to MongoDB using findOneAndUpdate to avoid version key race conditions
+    const updatedLesson = await Lesson.findOneAndUpdate(
+      { _id: id },
+      {
+        objectives: objectives || [],
+        content: content || [],
+        isEnriched: true,
+      },
+      { new: true }
+    ).populate('module');
 
     return res.status(200).json({
       success: true,
-      data: lesson,
+      data: updatedLesson,
     });
   } catch (error) {
     next(error);

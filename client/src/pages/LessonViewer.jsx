@@ -58,7 +58,7 @@ export default function LessonViewer() {
       <div>
         {lesson.module && (
           <Link
-            to={`/course/${typeof lesson.module === 'object' ? lesson.module._id : lesson.module}`}
+            to={`/course/${typeof lesson.module === 'object' ? lesson.module.course : ''}`}
             className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white transition duration-200"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
