@@ -63,7 +63,7 @@ export const createCourse = async (req, res, next) => {
       title: courseTitle,
       description: courseDescription,
       tags: courseTags,
-      creator: req.user?.sub || req.user?._id || req.body.creator || 'dev-temp-creator',
+      creator: req.auth?.payload?.sub || req.user?.sub || req.user?._id || req.body.creator || 'dev-temp-creator',
     });
 
     // 3. Create Modules and empty Lesson placeholders
@@ -112,5 +112,21 @@ export const createCourse = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+export const getUserCourses = async (req, res, next) => {
+  try {
+    const creator = req.auth?.payload?.sub;
+    if (!creator) {
+      return res.status(401).json({ success: false, error: 'Unauthorized: Missing subject' });
+    }
+    const courses = await Course.find({ creator }).populate({
+      path: 'modules',
+      populate: { path: 'lessons', select: 'title isEnriched' },
+    });
+    res.json({ success: true, data: courses });
+  } catch (err) {
+    next(err);
   }
 };
