@@ -2,6 +2,7 @@ import Lesson from '../models/Lesson.js';
 import Module from '../models/Module.js';
 import Course from '../models/Course.js';
 import { generateLessonPrompt } from '../services/aiService.js';
+import { narrateLessonText } from '../services/ttsService.js';
 
 export const getLessons = async (req, res, next) => {
   try {
@@ -89,5 +90,39 @@ export const getLessonById = async (req, res, next) => {
   } catch (error) {
     console.error("🔥 CRITICAL ERROR in getLessonById:", error);
     next(error);
+  }
+};
+
+export const narrateLesson = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log('[DEBUG] Narrate requested for lesson ID (lean):', id);
+    
+    // 1. Use .lean() to ensure Mongoose returns a plain JS object, not a proxy
+    const lesson = await Lesson.findById(id).lean();
+    if (!lesson) {
+      console.warn('[DEBUG] Lesson not found for narration ID:', id);
+      return res.status(404).json({ success: false, error: 'Lesson not found' });
+    }
+
+    // 2. Safety check: Ensure content exists and is an array
+    if (!lesson.content || !Array.isArray(lesson.content)) {
+      console.error("Invalid lesson content structure:", lesson.content);
+      return res.status(400).json({ success: false, error: 'Lesson content is invalid or missing' });
+    }
+    
+    console.log('[DEBUG] Found lesson for narration. Title:', lesson.title);
+    console.log('[DEBUG] Content block count:', lesson.content.length);
+
+    const hinglishText = await narrateLessonText(lesson.title, lesson.content);
+    console.log('[DEBUG] Narration text successfully generated. Length:', hinglishText?.length);
+    
+    res.json({ success: true, data: { text: hinglishText } });
+  } catch (err) {
+    // 4. Bulletproof logging: This will print the EXACT reason it crashed to your terminal
+    console.error("🚨 Backend Narration Route Error:", err.message);
+    console.error(err.stack);
+    
+    res.status(500).json({ success: false, error: 'Failed to generate narration', details: err.message });
   }
 };

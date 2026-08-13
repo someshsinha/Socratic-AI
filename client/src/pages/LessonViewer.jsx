@@ -4,6 +4,7 @@ import api from '../utils/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import LessonRenderer from '../components/LessonRenderer';
+import NarrateButton from '../components/NarrateButton';
 
 export default function LessonViewer() {
   const { id } = useParams();
@@ -64,9 +65,14 @@ export default function LessonViewer() {
 
       {/* Lesson Header */}
       <div className="space-y-4 border-b border-slate-800 pb-6">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-          {lesson.title || 'Untitled Lesson'}
-        </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            {lesson.title || 'Untitled Lesson'}
+          </h1>
+          <div className="flex-shrink-0">
+            <NarrateButton lessonId={lesson._id} />
+          </div>
+        </div>
 
         {/* Learning Objectives */}
         {lesson.objectives && lesson.objectives.length > 0 && (
