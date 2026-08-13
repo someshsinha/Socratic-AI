@@ -28,6 +28,7 @@ export const generateCoursePrompt = async (topic) => {
   const prompt = `
     You are an expert curriculum designer. Generate a structured online course on the topic: "${topic}".
     Return raw JSON ONLY. Do NOT include markdown fences (\`\`\`json), explanations, or extra text.
+    If you use backslashes for LaTeX or code, ensure they are properly escaped with double backslashes (\\\\) so the output is valid JSON.
 
     Expected JSON structure:
     {
@@ -82,6 +83,7 @@ export const generateLessonPrompt = async (courseTitle, moduleTitle, lessonTitle
     Lesson: "${lessonTitle}"
 
     Return raw JSON ONLY. Do NOT include markdown fences (\`\`\`json), explanations, or extra text.
+    If you use backslashes for LaTeX or code, ensure they are properly escaped with double backslashes (\\\\) so the output is valid JSON.
 
     Rules for code blocks:
     - Only include content blocks of type "code" if the lesson topic or course is explicitly related to computer science, programming, software engineering, databases, algorithms, or coding.

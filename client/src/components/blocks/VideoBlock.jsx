@@ -31,18 +31,18 @@ export default function VideoBlock({ query }) {
   }, [query]);
 
   if (state.status === 'loading') {
-    return <div className="p-5 bg-slate-900 border border-slate-850 rounded-2xl text-slate-400 text-sm animate-pulse">Loading video…</div>;
+    return <div className="no-print p-5 bg-slate-900 border border-slate-850 rounded-2xl text-slate-400 text-sm animate-pulse">Loading video…</div>;
   }
   if (state.status === 'error') {
     // Fail gracefully — a missing video shouldn't break the lesson, just show the query and error as a fallback
     return (
-      <div className="p-5 bg-slate-900 border border-slate-850 rounded-2xl text-slate-450 text-sm">
+      <div className="no-print p-5 bg-slate-900 border border-slate-850 rounded-2xl text-slate-450 text-sm">
         Couldn't load a video for <code className="text-violet-400 font-semibold">"{query}"</code>: <span className="text-red-400 font-medium">{state.error}</span>
       </div>
     );
   }
   return (
-    <div className="rounded-2xl overflow-hidden border border-slate-800 aspect-video shadow-lg">
+    <div className="no-print rounded-2xl overflow-hidden border border-slate-800 aspect-video shadow-lg">
       <iframe
         className="w-full h-full"
         src={`https://www.youtube.com/embed/${state.videoId}`}

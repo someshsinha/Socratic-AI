@@ -8,7 +8,7 @@ export default function ParagraphBlock({ text }) {
   return (
     <div className="text-slate-300 text-sm sm:text-base leading-relaxed space-y-4">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
+        remarkPlugins={[remarkGfm, [remarkMath, { singleDollar: true }]]}
         rehypePlugins={[rehypeKatex]}
         components={{
           // Render paragraph wrappers
