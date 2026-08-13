@@ -41,8 +41,18 @@ export const narrateLessonText = async (lessonTitle, lessonContent) => {
   // Translate to spoken Hinglish (Hindi-English mix written in Latin/Roman script)
   const translateResponse = await ai.models.generateContent({
     model: 'gemini-3.5-flash-lite',
-    contents: `Translate the following English lesson content into natural, spoken Hinglish (Hindi-English code-mixed, written in Roman/Latin script, the way Indian students actually speak — not pure Hindi, not pure English). Keep technical terms in English where that's how they're normally said. Return ONLY the translated text, no preamble or extra text.\n\nLesson: "${lessonTitle}"\n\n${plainText}`,
-  });
+    contents: `You are an expert technical content adapter and native Hindi-English speaker in India. Translate the following English lesson content into natural, spoken Hinglish (code-mixed Hindi and English, written in Roman/Latin script, exactly the way engineering students and developers in India talk during tech discussions).
+
+    CRITICAL RULES FOR TRANSLATION:
+    1. Conversational Flow: Use natural phrasing and everyday technical slang (e.g., "to basically yaha pe kya hota hai ki..."). Avoid overly formal textbook Hindi or stiff corporate phrasing.
+    2. Technical Terms & Tool Names: ALL software names, frameworks, libraries, protocols, and technical acronyms (such as Nginx, Kubernetes, API, etcd, PostgreSQL, Node.js, JSON, JWT, Docker, Redis) MUST remain strictly in their standard English spelling. Never translate them or alter them phonetically.
+    3. Output Format: Return ONLY the raw translated text. No preamble, no markdown formatting blocks, no conversational intro, and no quotes.
+    
+    Lesson Title: "${lessonTitle}"
+    
+    Lesson Content:
+    ${plainText}`,
+     });
   
   return translateResponse.text.trim(); 
 };

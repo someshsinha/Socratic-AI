@@ -77,11 +77,12 @@ export default function NarrateButton({ lessonId }) {
     utterancesRef.current = [];
 
     // Prioritize Indian accents, fallback to default
-    const indianVoice = availableVoices.find(v => v.lang.includes('en-IN') || v.lang.includes('hi-IN')) 
+    const indianVoice = availableVoices.find(v => v.lang === 'hi-IN') 
+      || availableVoices.find(v => v.lang === 'en-IN') 
       || availableVoices.find(v => v.default) 
       || availableVoices[0];
 
-    const playNextChunk = (index) => {
+        const playNextChunk = (index) => {
       if (index >= chunks.length) {
         setState('ready');
         return;
