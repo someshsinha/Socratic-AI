@@ -8,6 +8,7 @@ import LoginRedirect from './pages/LoginRedirect';
 import SignupRedirect from './pages/SignupRedirect';
 import CourseDetail from './pages/CourseDetail';
 import LessonViewer from './pages/LessonViewer';
+import MyCourses from './pages/MyCourses';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -26,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginRedirect />} />
             <Route path="/signup" element={<SignupRedirect />} />
+            <Route path="/my-courses" element={<MyCourses />} />
             <Route path="/course/:id" element={<CourseDetail />} />
             <Route path="/lesson/:id" element={<LessonViewer />} />
           </Route>

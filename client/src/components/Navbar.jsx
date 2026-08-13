@@ -1,113 +1,124 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Link, NavLink } from 'react-router-dom';
+import logoImg from '../assets/logo.png';
 
 export default function Navbar() {
   const { isAuthenticated, loginWithRedirect, logout, user, isLoading } = useAuth0();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { label: 'Courses', to: '/my-courses' },
+    { label: 'About', to: '/about' },
+    { label: 'Docs', to: '/docs' },
+  ];
 
   return (
-    <nav className="md:hidden sticky top-0 z-50 w-full backdrop-blur-md bg-slate-900/80 border-b border-slate-800/60 transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo / Brand */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2 group">
-              <span className="text-2xl font-black bg-gradient-to-r from-violet-400 via-fuchsia-400 to-indigo-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
-                Socratic AI
-              </span>
-            </Link>
-          </div>
+    <nav
+      className="sticky top-0 z-50 w-full border-b"
+      style={{ background: 'rgba(251,250,246,0.92)', backdropFilter: 'blur(14px)', borderColor: '#d8d3c7' }}
+    >
+      <div className="max-w-[1160px] mx-auto px-5 flex items-center justify-between gap-6 py-2">
+        {/* Logo — h-20 = 80px, shows bust + name + tagline */}
+        <Link to="/" className="flex-shrink-0">
+          <img src={logoImg} alt="Socratic AI" className="h-20 w-auto object-contain" />
+        </Link>
 
-          {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-1">
+        {/* Desktop nav */}
+        <div className="hidden md:flex items-center gap-0.5">
+          {navLinks.map(link => (
             <NavLink
-              to="/"
+              key={link.label}
+              to={link.to}
               className={({ isActive }) =>
-                `px-3 py-2 rounded-lg text-sm font-medium transition duration-200 ${
+                `px-3 py-1.5 text-sm font-medium border transition-all ${
                   isActive
-                    ? 'text-white bg-slate-800/60'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
+                    ? 'border-[#111827] bg-white text-[#111827]'
+                    : 'border-transparent text-[#5f6673] hover:border-[#d8d3c7] hover:bg-white/70 hover:text-[#111827]'
                 }`
               }
             >
-              Home
+              {link.label}
             </NavLink>
-            {isAuthenticated && (
-              <NavLink
-                to="/my-courses"
-                className={({ isActive }) =>
-                  `px-3 py-2 rounded-lg text-sm font-medium transition duration-200 ${
-                    isActive
-                      ? 'text-white bg-slate-800/60'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
-                  }`
-                }
-              >
-                My Library
-              </NavLink>
-            )}
-          </div>
+          ))}
+        </div>
 
-          {/* Authentication controls */}
-          <div className="flex items-center gap-4">
-            {isLoading ? (
-              <div className="h-8 w-8 rounded-full border-2 border-slate-700 border-t-violet-500 animate-spin" />
-            ) : isAuthenticated ? (
-              <div className="flex items-center gap-3">
-                <span className="hidden sm:inline-block text-xs font-semibold text-slate-400 tracking-wide uppercase px-2 py-1 rounded bg-slate-800/40 border border-slate-800">
-                  {user?.name || user?.nickname || 'Learner'}
-                </span>
-                {user?.picture && (
-                  <img
-                    src={user.picture}
-                    alt={user.name}
-                    className="h-9 w-9 rounded-full border border-violet-500/30 shadow-md object-cover"
-                  />
-                )}
-                <button
-                  onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-red-400 bg-slate-800 hover:bg-red-950/20 border border-slate-700/80 hover:border-red-500/30 rounded-xl transition duration-200 cursor-pointer"
-                >
-                  Log Out
-                </button>
-              </div>
-            ) : (
+        {/* Auth */}
+        <div className="flex items-center gap-3">
+          {isLoading ? (
+            <div className="h-5 w-5 rounded-full border-2 border-gray-300 border-t-gray-700 animate-spin" />
+          ) : isAuthenticated ? (
+            <div className="flex items-center gap-3">
+              {user?.picture && (
+                <img src={user.picture} alt={user.name} className="h-8 w-8 border border-[#d8d3c7]" />
+              )}
+              <span className="hidden sm:inline text-sm" style={{ color: '#5f6673' }}>{user?.name || user?.nickname}</span>
               <button
-                onClick={() => loginWithRedirect()}
-                className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 rounded-xl shadow-lg hover:shadow-violet-500/25 active:scale-95 transition duration-200 cursor-pointer"
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                className="px-3 py-1.5 border text-xs font-bold hover:-translate-y-px transition-transform"
+                style={{ borderColor: '#111827', color: '#111827' }}
               >
-                Log In
+                Sign Out
               </button>
-            )}
-          </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => loginWithRedirect()}
+              className="px-4 py-2 border text-sm font-bold text-white hover:-translate-y-px transition-transform"
+              style={{ borderColor: '#111827', background: '#111827' }}
+            >
+              Start Learning →
+            </button>
+          )}
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-1.5 border"
+            style={{ borderColor: '#d8d3c7' }}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <svg className="w-4 h-4" style={{ color: '#111827' }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              {mobileMenuOpen
+                ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                : <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 12h18M3 17h18" />}
+            </svg>
+          </button>
         </div>
       </div>
 
-      {/* Mobile nav indicator/links */}
-      <div className="md:hidden border-t border-slate-800/30 py-2 px-4 flex justify-around bg-slate-950/20 text-xs">
-        <NavLink
-          to="/"
-          className={({ isActive }) =>
-            `px-3 py-1.5 rounded-md font-medium transition duration-200 ${
-              isActive ? 'text-white bg-slate-800/60' : 'text-slate-400 hover:text-white'
-            }`
-          }
-        >
-          Home
-        </NavLink>
-        {isAuthenticated && (
-          <NavLink
-            to="/my-courses"
-            className={({ isActive }) =>
-              `px-3 py-1.5 rounded-md font-medium transition duration-200 ${
-                isActive ? 'text-white bg-slate-800/60' : 'text-slate-400 hover:text-white'
-              }`
-            }
-          >
-            My Library
-          </NavLink>
-        )}
-      </div>
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t px-5 py-3 space-y-1" style={{ background: '#fbfaf6', borderColor: '#d8d3c7' }}>
+          {navLinks.map(link => (
+            <NavLink
+              key={link.label}
+              to={link.to}
+              onClick={() => setMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                `block px-3 py-2 text-sm border ${
+                  isActive ? 'font-semibold' : ''
+                }`
+              }
+              style={({ isActive }) => ({
+                borderColor: isActive ? '#111827' : 'transparent',
+                background: isActive ? 'white' : 'transparent',
+                color: isActive ? '#111827' : '#5f6673',
+              })}
+            >
+              {link.label}
+            </NavLink>
+          ))}
+          {!isAuthenticated && (
+            <button
+              onClick={() => loginWithRedirect()}
+              className="w-full mt-2 px-3 py-2 border text-sm font-bold text-white text-left"
+              style={{ borderColor: '#111827', background: '#111827' }}
+            >
+              Start Learning →
+            </button>
+          )}
+        </div>
+      )}
     </nav>
   );
 }
