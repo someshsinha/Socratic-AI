@@ -12,6 +12,15 @@ export const errorHandler = (err, req, res, next) => {
     });
   }
 
+  // Clean handling for Auth0 / JWT UnauthorizedError (401)
+  if (err.name === 'UnauthorizedError' || err.status === 401 || err.statusCode === 401) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized',
+      message: err.message || 'Valid authentication token required',
+    });
+  }
+
   console.error('Error occurred:', err);
 
   const statusCode = err.statusCode || 500;

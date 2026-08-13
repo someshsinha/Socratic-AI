@@ -121,10 +121,12 @@ export const getUserCourses = async (req, res, next) => {
     if (!creator) {
       return res.status(401).json({ success: false, error: 'Unauthorized: Missing subject' });
     }
-    const courses = await Course.find({ creator }).populate({
-      path: 'modules',
-      populate: { path: 'lessons', select: 'title isEnriched' },
-    });
+    const courses = await Course.find({ creator })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: 'modules',
+        populate: { path: 'lessons', select: 'title isEnriched' },
+      });
     res.json({ success: true, data: courses });
   } catch (err) {
     next(err);
