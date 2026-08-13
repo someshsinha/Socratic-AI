@@ -19,7 +19,7 @@ body {
   line-height: 1.55;
 }
 
-/* Subtle dark grid texture — fades out toward bottom, like codingagents.fyi */
+/* Subtle background texture + delicate ambient gradient */
 body::before {
   content: "";
   position: fixed;
@@ -27,158 +27,40 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background-image:
+    radial-gradient(ellipse at 80% 12%, rgba(47, 111, 79, 0.038), transparent 55%),
+    radial-gradient(ellipse at 15% 75%, rgba(49, 95, 136, 0.032), transparent 50%),
     linear-gradient(rgba(17, 24, 39, 0.032) 1px, transparent 1px),
     linear-gradient(90deg, rgba(17, 24, 39, 0.032) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: linear-gradient(to bottom, black 0%, transparent 65%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 65%);
+  background-size: auto, auto, 44px 44px, 44px 44px;
+  mask-image: linear-gradient(to bottom, black 0%, rgba(0,0,0,0.8) 50%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, rgba(0,0,0,0.8) 50%, transparent 95%);
 }
 
+/* Smooth interactive micro-transitions */
+.card-hover-lift {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.card-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(17, 24, 39, 0.06);
+  border-color: #111827 !important;
+}
+
+/* Pulse animation for live indicators */
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.92); }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 2.2s infinite ease-in-out;
+}
 
 @media print {
   /* 1. Balanced page budget and margins to prevent trailing overflow pages */
   @page {
     margin: 12mm 15mm 12mm 15mm;
     size: A4;
-  }
-
-  /* 2. Hide all non-content UI, navigation, buttons, and widgets */
-  nav, 
-  button, 
-  footer, 
-  header,
-  .sidebar, 
-  .narrate-btn-container, 
-  .youtube-embed-container, 
-  .interactive-quiz-widget,
-  .no-print,
-  .print\:hidden,
-  a[href] {
-    display: none !important;
-  }
-
-  /* 3. Force pure white background globally and ensure clean flow */
-  body, html, #root, main {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    height: auto !important;
-    overflow: visible !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* 4. Reset element colors and remove dark-theme artifacts */
-  #lesson-content-card, 
-  #lesson-content-card * {
-    background: transparent !important;
-    background-color: transparent !important;
-    color: #1f2937 !important;
-    box-shadow: none !important;
-  }
-
-  #lesson-content-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* 5. Professional Textbook Spacing & Vertical Rhythm */
-  #lesson-content-card h1 {
-    font-size: 20pt !important;
-    font-weight: 800 !important;
-    color: #0f172a !important;
-    margin: 0 0 14pt 0 !important;
-    line-height: 1.2 !important;
-    border-bottom: 2px solid #e2e8f0 !important;
-    padding-bottom: 6pt !important;
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-  }
-
-  #lesson-content-card h2 {
-    font-size: 13.5pt !important;
-    font-weight: 700 !important;
-    color: #1e293b !important;
-    margin: 18pt 0 8pt 0 !important;
-    line-height: 1.3 !important;
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-  }
-
-  #lesson-content-card h3, 
-  #lesson-content-card h4 {
-    font-size: 11pt !important;
-    font-weight: 700 !important;
-    color: #334155 !important;
-    margin: 14pt 0 6pt 0 !important;
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-  }
-
-  #lesson-content-card p, 
-  #lesson-content-card li {
-    font-size: 10pt !important;
-    line-height: 1.6 !important;
-    margin-bottom: 8pt !important;
-    color: #334155 !important;
-  }
-
-  #lesson-content-card strong {
-    font-weight: 800 !important;
-    color: #000000 !important;
-  }
-
-  /* Lists Spacing */
-  #lesson-content-card ul, 
-  #lesson-content-card ol {
-    margin-bottom: 10pt !important;
-    padding-left: 20px !important;
-  }
-
-  /* 6. Clean Block Isolation & Styling */
-  pre, 
-  blockquote, 
-  .knowledge-check-print-card {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-    margin: 14pt 0 !important;
-  }
-
-  /* Code Block Styling */
-  #lesson-content-card pre {
-    background: #f8fafc !important;
-    background-color: #f8fafc !important;
-    color: #0f172a !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 6px !important;
-    padding: 10pt 14pt !important;
-    font-size: 8.5pt !important;
-    font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
-    white-space: pre-wrap !important;
-    word-break: break-word !important;
-  }
-
-  /* Callouts & Blockquotes */
-  blockquote {
-    border-left: 4px solid #4f46e5 !important;
-    background-color: #f8fafc !important;
-    color: #0f172a !important;
-    padding: 10pt 14pt !important;
-    border-radius: 0 6px 6px 0 !important;
-  }
-
-  /* Knowledge Check / MCQ Card Styling (Clean single-border layout) */
-  .knowledge-check-print-card {
-    background-color: #f8fafc !important;
-    border: 1px solid #cbd5e1 !important;
-    border-left: 4px solid #6366f1 !important;
-    border-radius: 6px !important;
-    padding: 12pt 14pt !important;
-  }
-
-  .knowledge-check-print-card pre, 
-  .knowledge-check-print-card code {
-    display: none !important;
   }
 }

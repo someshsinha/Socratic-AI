@@ -12,20 +12,51 @@ const T = {
   paper: '#fbfaf6',
   panel: '#ffffff',
   line:  '#d8d3c7',
-  accent: '#315f88',   // blue-ish accent like their --blue
+  accent: '#315f88',
+  green: '#2f6f4f',
 };
 
 /* ────────────────────────────────────────────────────────
-   WORKSPACE PANEL (hero right side)
+   WORKSPACE PANEL (Hero right side) — Fully Visible & Expanded
 ──────────────────────────────────────────────────────── */
 function WorkspacePanel() {
   const [expanded, setExpanded] = useState({ 0: true, 1: false, 2: false });
+  const [activeTab, setActiveTab] = useState('Overview');
   const toggle = i => setExpanded(p => ({ ...p, [i]: !p[i] }));
 
   const modules = [
-    { num: '01', title: 'Foundations', count: 4, lessons: ['What is a Distributed System?', 'Processes & Communication', 'Clocks & Ordering', 'Failure Models'] },
-    { num: '02', title: 'Replication & Consistency', count: 4, lessons: ['Replication', 'Consistency Models', 'Quorum Systems', 'CAP Theorem'] },
-    { num: '03', title: 'Consensus', count: 4, lessons: ['Leader Election', 'Raft', 'Log Replication', 'Failure Recovery'] },
+    {
+      num: '01',
+      title: 'Foundations & System Models',
+      count: 3,
+      duration: '45m',
+      lessons: [
+        { code: '1.1', title: 'What is a Distributed System?', tag: 'Theory', time: '12m' },
+        { code: '1.2', title: 'Processes, Networking & RPCs', tag: 'Architecture', time: '18m' },
+        { code: '1.3', title: 'Logical Clocks & Lamport Timestamps', tag: 'Math & Logic', time: '15m' },
+      ],
+    },
+    {
+      num: '02',
+      title: 'Replication & Consistency Models',
+      count: 3,
+      duration: '1h 10m',
+      lessons: [
+        { code: '2.1', title: 'Primary-Backup Replication', tag: 'State Machine', time: '20m' },
+        { code: '2.2', title: 'Quorums & The CAP Theorem', tag: 'Proofs', time: '25m' },
+        { code: '2.3', title: 'Linearizability vs Eventual Consistency', tag: 'Analysis', time: '25m' },
+      ],
+    },
+    {
+      num: '03',
+      title: 'Distributed Consensus & Raft',
+      count: 2,
+      duration: '55m',
+      lessons: [
+        { code: '3.1', title: 'Leader Election & Heartbeats', tag: 'Protocol', time: '25m' },
+        { code: '3.2', title: 'Log Replication & Safety Invariants', tag: 'Implementation', time: '30m' },
+      ],
+    },
   ];
 
   const sideLinks = [
@@ -33,44 +64,53 @@ function WorkspacePanel() {
     { label: 'Modules',   d: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
     { label: 'Lessons',   d: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
     { label: 'Resources', d: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' },
-    { label: 'Progress',  d: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10' },
     { label: 'Export',    d: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12' },
   ];
 
   return (
     <div
-      className="w-full overflow-hidden text-xs"
-      style={{ border: `1px solid ${T.ink}`, background: T.panel, boxShadow: '0 16px 48px rgba(17,24,39,0.08)' }}
+      className="w-full overflow-hidden card-hover-lift"
+      style={{ border: `1px solid ${T.ink}`, background: T.panel, boxShadow: '0 16px 48px rgba(17,24,39,0.07)' }}
     >
-      {/* Top bar */}
+      {/* Top Header Bar */}
       <div
         className="flex items-center justify-between px-4 py-2.5"
         style={{ borderBottom: `1px solid ${T.line}`, background: T.paper }}
       >
-        <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: T.muted }}>
-          Curriculum Engine // Workspace
-        </span>
-        <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#2f6f4f' }} />
-          <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', color: '#2f6f4f' }}>Ready</span>
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#d8d3c7' }} />
+          <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#d8d3c7' }} />
+          <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#d8d3c7' }} />
+          <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: T.muted, marginLeft: 6 }}>
+            Curriculum Engine // Workspace
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full animate-soft-pulse" style={{ background: T.green }} />
+          <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: T.green }}>Ready</span>
         </div>
       </div>
 
-      <div className="flex" style={{ minHeight: 360 }}>
-        {/* Left sidebar */}
-        <div className="w-36 shrink-0 flex flex-col" style={{ borderRight: `1px solid ${T.line}` }}>
-          <div className="px-3 py-3" style={{ borderBottom: `1px solid ${T.line}` }}>
-            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: T.muted, fontWeight: 700, marginBottom: 6 }}>Topic</p>
-            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: T.ink, lineHeight: 1.3 }}>Distributed Systems</span>
+      <div className="flex" style={{ minHeight: 380 }}>
+        {/* Left sidebar - clean and proportional */}
+        <div className="w-38 shrink-0 flex flex-col" style={{ borderRight: `1px solid ${T.line}`, background: 'rgba(251,250,246,0.5)' }}>
+          <div className="px-3.5 py-3" style={{ borderBottom: `1px solid ${T.line}` }}>
+            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.muted, fontWeight: 700, margin: '0 0 3px' }}>Course</p>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: T.ink, lineHeight: 1.25 }}>Distributed Systems</span>
           </div>
-          <nav className="flex-1 py-1">
+
+          <nav className="flex-1 py-1.5">
             {sideLinks.map(({ label, d }) => (
-              <button key={label} className="w-full flex items-center gap-2 px-3 py-2 text-left transition-colors"
+              <button
+                key={label}
+                onClick={() => setActiveTab(label)}
+                className="w-full flex items-center gap-2 px-3.5 py-1.5 text-left transition-all"
                 style={{
-                  fontSize: '0.7rem', fontWeight: label === 'Overview' ? 700 : 500,
-                  color: label === 'Overview' ? T.ink : T.muted,
-                  background: label === 'Overview' ? 'rgba(255,255,255,0.7)' : 'transparent',
-                  borderRight: label === 'Overview' ? `2px solid ${T.ink}` : 'none',
+                  fontSize: '0.74rem',
+                  fontWeight: activeTab === label ? 700 : 500,
+                  color: activeTab === label ? T.ink : T.muted,
+                  background: activeTab === label ? T.panel : 'transparent',
+                  borderRight: activeTab === label ? `2px solid ${T.ink}` : 'none',
                 }}>
                 <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d={d} />
@@ -79,55 +119,111 @@ function WorkspacePanel() {
               </button>
             ))}
           </nav>
-          <div className="px-3 py-3" style={{ borderTop: `1px solid ${T.line}` }}>
-            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: T.muted, fontWeight: 700, marginBottom: 8 }}>Stats</p>
-            {[{ label: '3 Modules' }, { label: '12 Lessons' }, { label: '~4h Total' }].map(s => (
-              <p key={s.label} style={{ fontSize: '0.68rem', color: T.muted, marginBottom: 4 }}>— {s.label}</p>
-            ))}
+
+          <div className="px-3.5 py-3" style={{ borderTop: `1px solid ${T.line}` }}>
+            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.muted, fontWeight: 700, margin: '0 0 5px' }}>Scope</p>
+            <div className="space-y-1">
+              <p style={{ fontSize: '0.72rem', color: T.muted, margin: 0 }}>— 3 Core Modules</p>
+              <p style={{ fontSize: '0.72rem', color: T.muted, margin: 0 }}>— 8 Deep Lessons</p>
+              <p style={{ fontSize: '0.72rem', color: T.muted, margin: 0 }}>— ~2.5h Learning</p>
+            </div>
           </div>
         </div>
 
-        {/* Main */}
-        <div className="flex-1 flex flex-col">
+        {/* Main Content Area - Full outline visibility */}
+        <div className="flex-1 flex flex-col min-w-0" style={{ background: T.panel }}>
           <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: `1px solid ${T.line}` }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: T.ink }}>Curriculum Overview</span>
-            <button style={{ fontSize: '0.65rem', color: T.accent, fontWeight: 700 }}>Expand all</button>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: T.ink }}>Generated Curriculum Outline</span>
+            <button
+              onClick={() => setExpanded(p => ({ 0: !p[0], 1: !p[1], 2: !p[2] }))}
+              style={{ fontSize: '0.72rem', color: T.accent, fontWeight: 700, cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+            >
+              Expand / Collapse
+            </button>
           </div>
-          <div className="flex-1 overflow-auto" style={{ borderBottom: `1px solid ${T.line}` }}>
+
+          {/* Module List */}
+          <div className="flex-1 overflow-auto divide-y divide-[#d8d3c7]">
             {modules.map((mod, i) => (
-              <div key={i} style={{ borderBottom: i < 2 ? `1px solid ${T.line}` : 'none' }}>
-                <button onClick={() => toggle(i)} className="w-full flex items-center justify-between px-4 py-3 transition-colors hover:bg-white/50">
-                  <div className="flex items-center gap-2.5">
-                    <span style={{
-                      width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '0.6rem', fontWeight: 700, fontFamily: 'ui-monospace,monospace', flexShrink: 0,
-                      background: i === 0 ? T.ink : T.line, color: i === 0 ? 'white' : T.muted
-                    }}>{mod.num}</span>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 600, color: T.ink }}>{mod.title}</span>
+              <div key={i} className="transition-colors">
+                <button
+                  onClick={() => toggle(i)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors hover:bg-black/[0.02]"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span
+                      style={{
+                        width: 22, height: 22, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '0.68rem', fontWeight: 800, fontFamily: 'ui-monospace,monospace', flexShrink: 0,
+                        background: i === 0 ? T.ink : T.paper, color: i === 0 ? 'white' : T.muted,
+                        border: `1px solid ${i === 0 ? T.ink : T.line}`,
+                      }}
+                    >
+                      {mod.num}
+                    </span>
+                    <div className="min-w-0">
+                      <h4 style={{ fontSize: '0.82rem', fontWeight: 700, color: T.ink, margin: 0, lineHeight: 1.25 }} className="truncate">
+                        {mod.title}
+                      </h4>
+                      <span style={{ fontSize: '0.68rem', color: T.muted }}>
+                        {mod.count} lessons • {mod.duration}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span style={{ fontSize: '0.65rem', color: T.muted }}>{mod.count} Lessons</span>
-                    <svg className={`w-3 h-3 transition-transform duration-200 ${expanded[i] ? 'rotate-180' : ''}`} fill="none" stroke={T.muted} strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
+                  <svg className={`w-4 h-4 shrink-0 transition-transform duration-200 ml-2 ${expanded[i] ? 'rotate-180' : ''}`} fill="none" stroke={T.muted} strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
+
+                {/* Sub-lessons list with full badge visibility */}
                 {expanded[i] && (
-                  <div className="px-4 pb-3" style={{ background: 'rgba(251,250,246,0.6)' }}>
-                    {mod.lessons.map((lesson, j) => (
-                      <p key={j} style={{ fontSize: '0.68rem', color: T.muted, padding: '3px 0', paddingLeft: 12, borderLeft: `2px solid ${T.line}`, marginBottom: 3 }}>
-                        {lesson}
-                      </p>
+                  <div className="px-4 pb-3 pt-1 space-y-1.5" style={{ background: 'rgba(251,250,246,0.7)' }}>
+                    {mod.lessons.map((lesson) => (
+                      <div
+                        key={lesson.code}
+                        className="flex items-center justify-between px-3 py-2 rounded-sm transition-all hover:bg-white"
+                        style={{ border: `1px solid ${T.line}`, background: 'rgba(255,255,255,0.92)' }}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 mr-2">
+                          <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.68rem', fontWeight: 700, color: T.muted }} className="shrink-0">
+                            {lesson.code}
+                          </span>
+                          <span style={{ fontSize: '0.76rem', fontWeight: 600, color: T.ink }} className="truncate">
+                            {lesson.title}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span
+                            style={{
+                              fontFamily: 'ui-monospace,monospace', fontSize: '0.62rem', fontWeight: 700,
+                              padding: '1px 6px', border: `1px solid ${T.line}`, color: T.muted, background: T.paper,
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {lesson.tag}
+                          </span>
+                          <span style={{ fontSize: '0.68rem', color: T.muted, fontFamily: 'ui-monospace,monospace', whiteSpace: 'nowrap' }}>
+                            {lesson.time}
+                          </span>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
               </div>
             ))}
           </div>
-          <div className="px-4 py-2 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: T.accent }} />
-            <span style={{ fontSize: '0.65rem', color: T.muted, fontStyle: 'italic', fontFamily: 'ui-monospace,monospace' }}>
-              AI is structuring your learning path...
+
+          {/* Bottom live status */}
+          <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderTop: `1px solid ${T.line}`, background: T.paper }}>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-1.5 h-1.5 rounded-full animate-soft-pulse shrink-0" style={{ background: T.accent }} />
+              <span style={{ fontSize: '0.7rem', color: T.muted, fontStyle: 'italic', fontFamily: 'ui-monospace,monospace' }} className="truncate">
+                AI ready to enrich full course notes
+              </span>
+            </div>
+            <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.65rem', color: T.green, fontWeight: 700, whiteSpace: 'nowrap', marginLeft: 8 }} className="shrink-0">
+              100% LATEX & MCQ
             </span>
           </div>
         </div>
@@ -141,6 +237,23 @@ function WorkspacePanel() {
 ──────────────────────────────────────────────────────── */
 function HeroSection({ onGenerate, loading }) {
   const [topic, setTopic] = useState('');
+  
+  // Subtle animated placeholder cycling
+  const sampleTopics = [
+    'Distributed Systems',
+    'Quantum Algorithms',
+    'Operating System Kernels',
+    'Compiler Design',
+    'Neural Networks from Scratch'
+  ];
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPlaceholderIndex(prev => (prev + 1) % sampleTopics.length);
+    }, 3200);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -148,82 +261,91 @@ function HeroSection({ onGenerate, loading }) {
   };
 
   return (
-    <section style={{ background: T.paper, paddingTop: 72, paddingBottom: 48 }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 20px' }}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-9 items-center">
-          {/* Left */}
-          <div>
+    <section style={{ background: 'transparent', paddingTop: 56, paddingBottom: 64 }}>
+      {/* Expanded container for comfortable right-side width */}
+      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          {/* Left: 5 cols */}
+          <div className="lg:col-span-5 space-y-6">
             {/* Eyebrow */}
             <p style={{
               fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-              fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em',
-              textTransform: 'uppercase', color: '#2f6f4f', marginBottom: 18,
+              fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em',
+              textTransform: 'uppercase', color: T.green, margin: 0,
             }}>
               Socratic-AI v0.1 // Curriculum Engine
             </p>
 
-            {/* H1 */}
+            {/* H1 — Balanced, compact, breathing */}
             <h1 style={{
-              fontSize: 'clamp(2.7rem, 7vw, 5.6rem)',
-              fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.03,
-              color: T.ink, margin: '0 0 24px',
+              fontSize: 'clamp(2.2rem, 4.4vw, 3.9rem)',
+              fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.05,
+              color: T.ink, margin: 0,
             }}>
               Question<br />Everything.<br />
               <em style={{ fontStyle: 'italic', fontFamily: 'Georgia,serif', color: T.ink }}>Learn Deeply.</em>
             </h1>
 
             {/* Lede */}
-            <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#343b48', lineHeight: 1.6, marginBottom: 28, maxWidth: 480 }}>
+            <p style={{ fontSize: '0.96rem', color: '#4b5563', lineHeight: 1.65, margin: 0, maxWidth: 420 }}>
               Generate rigorous, structured academic courses and interactive study notes.
               First-principles reasoning. Native LaTeX. Zero fluff.
             </p>
 
-            {/* Input */}
-            <form onSubmit={handleSubmit} style={{ display: 'flex', marginBottom: 20 }}>
+            {/* Input with animated placeholder */}
+            <form onSubmit={handleSubmit} style={{ display: 'flex', marginTop: 14 }}>
               <input
                 type="text"
                 value={topic}
                 onChange={e => setTopic(e.target.value)}
-                placeholder={`Enter a topic, e.g. "Distributed Systems"`}
+                placeholder={`Enter a topic, e.g. "${sampleTopics[placeholderIndex]}"`}
                 disabled={loading}
                 style={{
                   flex: 1, border: `1px solid ${T.ink}`, borderRight: 'none',
-                  padding: '12px 16px', fontSize: '0.95rem', color: T.ink,
+                  padding: '11px 16px', fontSize: '0.9rem', color: T.ink,
                   background: T.panel, fontFamily: 'inherit', outline: 'none',
-                  minHeight: 46,
+                  minHeight: 44, transition: 'border-color 0.2s',
                 }}
               />
               <button
                 type="submit"
                 disabled={loading || !topic.trim()}
                 style={{
-                  border: `1px solid ${T.ink}`, background: loading || !topic.trim() ? T.line : T.ink,
+                  border: `1px solid ${T.ink}`,
+                  background: loading || !topic.trim() ? T.line : T.ink,
                   color: loading || !topic.trim() ? T.muted : 'white',
-                  padding: '12px 20px', fontWeight: 750, fontSize: '0.88rem',
+                  padding: '11px 18px', fontWeight: 750, fontSize: '0.82rem',
                   cursor: loading || !topic.trim() ? 'not-allowed' : 'pointer',
                   fontFamily: 'inherit', letterSpacing: '0.04em', whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease',
                 }}
+                className="hover:-translate-y-px active:translate-y-0"
               >
                 {loading ? 'Generating…' : 'GENERATE →'}
               </button>
             </form>
 
             {/* Feature tags */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingTop: 4 }}>
               {['AI-Powered', 'Structured Curriculum', 'Rich Lessons', 'PDF Export'].map(f => (
-                <span key={f} style={{
-                  border: `1px solid ${T.line}`, padding: '4px 10px',
-                  fontSize: '0.75rem', color: T.muted,
-                  fontFamily: 'ui-monospace,monospace',
-                }}>
+                <span
+                  key={f}
+                  className="transition-colors hover:border-[#111827]"
+                  style={{
+                    border: `1px solid ${T.line}`, padding: '3px 9px',
+                    fontSize: '0.72rem', color: T.muted,
+                    fontFamily: 'ui-monospace,monospace',
+                    background: 'rgba(255,255,255,0.6)',
+                  }}
+                >
                   {f}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Right: Workspace panel */}
-          <div className="hidden lg:block">
+          {/* Right: 7 cols — fully expanded so all badges & titles are 100% visible */}
+          <div className="hidden lg:block lg:col-span-7">
             <WorkspacePanel />
           </div>
         </div>
@@ -243,43 +365,44 @@ function HowItWorks() {
   ];
 
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '56px 0', background: T.panel }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 20px' }}>
+    <section style={{ borderTop: `1px solid ${T.line}`, padding: '72px 0', background: 'rgba(255,255,255,0.7)' }}>
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
         {/* Section header */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#2f6f4f', margin: '0 0 14px' }}>
+            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.green, margin: '0 0 12px' }}>
               How It Works
             </p>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.01em', color: T.ink, margin: 0 }}>
+            <h2 style={{ fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-0.01em', color: T.ink, margin: 0 }}>
               From any topic to mastery in 3 steps
             </h2>
           </div>
         </div>
 
-        {/* Steps — simple flex row, arrows as siblings */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
+        {/* Steps with subtle hover lift */}
+        <div style={{ display: 'flex', alignItems: 'stretch', gap: 0 }} className="flex-col sm:flex-row">
           {steps.map((step, i) => (
             <React.Fragment key={i}>
-              {/* Step */}
-              <div style={{ flex: 1, border: `1px solid ${T.line}`, background: T.panel, padding: 24 }}>
-                <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.78rem', fontWeight: 800, color: T.muted, marginBottom: 14 }}>
+              <div
+                className="card-hover-lift"
+                style={{ flex: 1, border: `1px solid ${T.line}`, background: T.panel, padding: 24 }}
+              >
+                <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 800, color: T.muted, marginBottom: 12 }}>
                   {step.num}
                 </p>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: T.ink, margin: '0 0 10px', letterSpacing: '-0.01em' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: T.ink, margin: '0 0 8px', letterSpacing: '-0.01em' }}>
                   {step.title}
                 </h3>
-                <p style={{ fontSize: '0.92rem', color: T.muted, lineHeight: 1.6, margin: 0 }}>
+                <p style={{ fontSize: '0.88rem', color: T.muted, lineHeight: 1.6, margin: 0 }}>
                   {step.desc}
                 </p>
               </div>
-              {/* Arrow between steps */}
               {i < 2 && (
                 <div style={{
                   width: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  alignSelf: 'stretch', borderTop: `1px solid ${T.line}`, borderBottom: `1px solid ${T.line}`,
-                  background: T.paper, color: T.muted, fontSize: '1rem',
-                }}>
+                  borderTop: `1px solid ${T.line}`, borderBottom: `1px solid ${T.line}`,
+                  background: T.paper, color: T.muted, fontSize: '0.95rem',
+                }} className="hidden sm:flex">
                   →
                 </div>
               )}
@@ -296,40 +419,44 @@ function HowItWorks() {
 ──────────────────────────────────────────────────────── */
 function WhatYouGet() {
   const features = [
-    { num: '01', title: 'Structured Lessons', desc: 'Clear, concise and well-organized content. Every lesson has objectives, explanations, and takeaways.' },
-    { num: '02', title: 'Rich Resources', desc: 'Curated videos, docs, articles, and external links hand-picked per lesson.' },
-    { num: '03', title: 'Code & Examples', desc: 'Practical code snippets and real-world examples for every technical concept.' },
-    { num: '04', title: 'Quizzes & MCQs', desc: 'Knowledge checks after each lesson so you can test comprehension as you go.' },
-    { num: '05', title: 'Progress Tracking', desc: 'A clear view of where you are in the course and what comes next.' },
-    { num: '06', title: 'PDF Export', desc: 'Export the full course, a single lesson, or your notes as a formatted PDF.' },
+    { num: '01', title: 'Structured Lessons', desc: 'Clear, concise and well-organized content with objectives, core derivations, and key takeaways.' },
+    { num: '02', title: 'Rich Resources', desc: 'Curated videos, docs, and external references matched to each lesson topic.' },
+    { num: '03', title: 'Code & Examples', desc: 'Practical code snippets and real-world implementations for every concept.' },
+    { num: '04', title: 'Quizzes & MCQs', desc: 'Built-in knowledge checks after each lesson to reinforce comprehension.' },
+    { num: '05', title: 'Progress Tracking', desc: 'A transparent view of module completion and learning milestones.' },
+    { num: '06', title: 'PDF Export', desc: 'Print-ready textbook-formatted export of any lesson or entire course.' },
   ];
 
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '56px 0', background: T.paper }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 20px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
+    <section style={{ borderTop: `1px solid ${T.line}`, padding: '72px 0', background: 'transparent' }}>
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#2f6f4f', margin: '0 0 14px' }}>
+            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.green, margin: '0 0 12px' }}>
               What You Get
             </p>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.01em', color: T.ink, margin: 0 }}>
+            <h2 style={{ fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-0.01em', color: T.ink, margin: 0 }}>
               Everything you need to learn better
             </h2>
           </div>
-          <p style={{ color: T.muted, maxWidth: 380, fontSize: '0.95rem', lineHeight: 1.6, margin: 0 }}>
-            Every course comes fully loaded — no extra setup, no add-ons required.
+          <p style={{ color: T.muted, maxWidth: 360, fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
+            Every generated course comes completely structured out of the box.
           </p>
         </div>
 
-        {/* 3-column grid with bordered cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+        {/* 3-column grid with bordered cards + lift */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {features.map((f) => (
-            <div key={f.num} style={{ border: `1px solid ${T.line}`, background: T.panel, padding: 20 }}>
-              <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.72rem', fontWeight: 800, color: T.muted, marginBottom: 10 }}>
+            <div
+              key={f.num}
+              className="card-hover-lift"
+              style={{ border: `1px solid ${T.line}`, background: T.panel, padding: 20 }}
+            >
+              <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.7rem', fontWeight: 800, color: T.muted, marginBottom: 8 }}>
                 {f.num}
               </p>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: T.ink, margin: '0 0 8px' }}>{f.title}</h3>
-              <p style={{ fontSize: '0.88rem', color: T.muted, lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: T.ink, margin: '0 0 6px' }}>{f.title}</h3>
+              <p style={{ fontSize: '0.84rem', color: T.muted, lineHeight: 1.55, margin: 0 }}>{f.desc}</p>
             </div>
           ))}
         </div>
@@ -368,54 +495,70 @@ function AnimatedAudioPlayer() {
   const tabs = ['Lesson', 'Notes', 'Transcript', 'Resources'];
 
   return (
-    <div style={{ border: `1px solid ${T.ink}`, background: T.panel, boxShadow: '0 16px 48px rgba(17,24,39,0.08)' }}>
+    <div
+      className="card-hover-lift"
+      style={{ border: `1px solid ${T.ink}`, background: T.panel, boxShadow: '0 16px 48px rgba(17,24,39,0.06)' }}
+    >
       {/* Tabs */}
       <div style={{ display: 'flex', borderBottom: `1px solid ${T.line}` }}>
         {tabs.map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)} style={{
-            flex: 1, padding: '12px 8px', fontSize: '0.8rem', fontWeight: 600, fontFamily: 'inherit',
-            background: 'transparent', border: 'none', cursor: 'pointer', transition: 'color 0.15s',
-            color: activeTab === tab ? T.ink : T.muted,
-            borderBottom: activeTab === tab ? `2px solid ${T.ink}` : '2px solid transparent',
-          }}>{tab}</button>
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            style={{
+              flex: 1, padding: '10px 6px', fontSize: '0.75rem', fontWeight: 600, fontFamily: 'inherit',
+              background: 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.15s',
+              color: activeTab === tab ? T.ink : T.muted,
+              borderBottom: activeTab === tab ? `2px solid ${T.ink}` : '2px solid transparent',
+            }}
+          >
+            {tab}
+          </button>
         ))}
       </div>
 
-      <div style={{ padding: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+      <div style={{ padding: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
           {/* Play button */}
-          <button onClick={() => setPlaying(p => !p)} style={{
-            width: 44, height: 44, flexShrink: 0, border: `1px solid ${T.ink}`,
-            background: playing ? T.ink : T.panel, color: playing ? T.panel : T.ink,
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all 0.15s',
-          }}>
+          <button
+            onClick={() => setPlaying(p => !p)}
+            style={{
+              width: 40, height: 40, flexShrink: 0, border: `1px solid ${T.ink}`,
+              background: playing ? T.ink : T.panel, color: playing ? T.panel : T.ink,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.15s',
+            }}
+            className="hover:-translate-y-px active:translate-y-0"
+          >
             {playing ? (
-              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" /></svg>
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" /></svg>
             ) : (
-              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style={{ marginLeft: 2 }}><path d="M8 5v14l11-7z" /></svg>
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style={{ marginLeft: 2 }}><path d="M8 5v14l11-7z" /></svg>
             )}
           </button>
 
           {/* Waveform */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 40 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 36 }}>
               {bars.map((h, i) => (
-                <div key={i} style={{
-                  flex: 1, height: `${h * 100}%`, borderRadius: 1,
-                  background: i < activeBars ? T.ink : T.line,
-                  transition: 'background 0.05s',
-                }} />
+                <div
+                  key={i}
+                  style={{
+                    flex: 1, height: `${h * 100}%`, borderRadius: 1,
+                    background: i < activeBars ? T.ink : T.line,
+                    transition: 'background 0.05s',
+                  }}
+                />
               ))}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'ui-monospace,monospace', fontSize: '0.72rem', color: T.muted }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'ui-monospace,monospace', fontSize: '0.68rem', color: T.muted }}>
               <span>{fmt(elapsed)}</span><span>{fmt(DURATION)}</span>
             </div>
           </div>
 
           {/* Hinglish badge */}
           <button style={{
-            border: `1px solid ${T.line}`, padding: '6px 10px', fontSize: '0.75rem', fontWeight: 700,
+            border: `1px solid ${T.line}`, padding: '5px 8px', fontSize: '0.7rem', fontWeight: 700,
             color: T.muted, background: T.paper, cursor: 'pointer', fontFamily: 'ui-monospace,monospace',
             whiteSpace: 'nowrap',
           }}>
@@ -426,14 +569,14 @@ function AnimatedAudioPlayer() {
         {/* Progress bar */}
         <div
           onClick={e => { const r = e.currentTarget.getBoundingClientRect(); setProgress(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))); }}
-          style={{ height: 4, background: T.line, cursor: 'pointer', marginBottom: 14 }}
+          style={{ height: 4, background: T.line, cursor: 'pointer', marginBottom: 12 }}
         >
           <div style={{ height: '100%', background: T.ink, width: `${progress * 100}%`, transition: 'width 0.1s' }} />
         </div>
 
         {/* Download */}
-        <button style={{ fontSize: '0.8rem', fontWeight: 600, color: T.muted, background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <button style={{ fontSize: '0.76rem', fontWeight: 600, color: T.muted, background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
           Download PDF
@@ -448,22 +591,22 @@ function AnimatedAudioPlayer() {
 ──────────────────────────────────────────────────────── */
 function HinglishSection() {
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '56px 0', background: T.panel }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 20px' }}>
+    <section style={{ borderTop: `1px solid ${T.line}`, padding: '72px 0', background: 'rgba(255,255,255,0.7)' }}>
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(320px, 0.9fr)', gap: 48, alignItems: 'center' }}>
           {/* Left */}
           <div>
-            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#2f6f4f', margin: '0 0 18px' }}>
+            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.green, margin: '0 0 16px' }}>
               Learn In Your Language
             </p>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.01em', color: T.ink, margin: '0 0 24px' }}>
+            <h2 style={{ fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-0.01em', color: T.ink, margin: '0 0 20px' }}>
               In English.<br />In Hinglish.<br />Your choice.
             </h2>
-            <div style={{ display: 'grid', gap: 12 }}>
+            <div style={{ display: 'grid', gap: 10 }}>
               {['English explanations for global learners', 'Hinglish audio narration for better retention', 'Download notes and PDFs anytime', 'Works on desktop, tablet, and mobile'].map((item, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, borderTop: `1px solid ${T.line}`, paddingTop: 12 }}>
-                  <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.7rem', fontWeight: 800, color: '#2f6f4f', flexShrink: 0, paddingTop: 2 }}>✓</span>
-                  <span style={{ fontSize: '0.92rem', color: T.muted, lineHeight: 1.55 }}>{item}</span>
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, borderTop: `1px solid ${T.line}`, paddingTop: 10 }}>
+                  <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.68rem', fontWeight: 800, color: T.green, flexShrink: 0, paddingTop: 2 }}>✓</span>
+                  <span style={{ fontSize: '0.88rem', color: T.muted, lineHeight: 1.55 }}>{item}</span>
                 </div>
               ))}
             </div>
@@ -482,12 +625,12 @@ function HinglishSection() {
 ──────────────────────────────────────────────────────── */
 function QuoteSection() {
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '56px 0', background: T.paper }}>
-      <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 20px', textAlign: 'center' }}>
-        <p style={{ fontSize: 'clamp(1.2rem, 3vw, 1.8rem)', fontStyle: 'italic', fontFamily: 'Georgia,serif', color: T.ink, lineHeight: 1.5, margin: '0 0 20px' }}>
+    <section style={{ borderTop: `1px solid ${T.line}`, padding: '72px 0', background: 'transparent' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
+        <p style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.6rem)', fontStyle: 'italic', fontFamily: 'Georgia,serif', color: T.ink, lineHeight: 1.55, margin: '0 0 18px' }}>
           "Education is the kindling of a flame, not the filling of a vessel."
         </p>
-        <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2f6f4f' }}>
+        <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: T.green }}>
           — Socrates
         </p>
       </div>
@@ -500,18 +643,22 @@ function QuoteSection() {
 ──────────────────────────────────────────────────────── */
 function Footer() {
   return (
-    <footer style={{ borderTop: `1px solid ${T.line}`, color: T.muted, padding: '28px 0 44px', background: T.paper }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 20px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
-        <p style={{ fontSize: '0.88rem', margin: 0 }}>
+    <footer style={{ borderTop: `1px solid ${T.line}`, color: T.muted, padding: '28px 0 40px', background: T.paper }}>
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
+        <p style={{ fontSize: '0.85rem', margin: 0 }}>
           A portfolio project by{' '}
           <a href="https://github.com/someshsinha" style={{ color: T.ink, fontWeight: 700 }}>@someshsinha</a>
         </p>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
           {['GitHub', 'About', 'Contact'].map(l => (
-            <a key={l} href="#" style={{ fontSize: '0.88rem', color: T.muted, textDecoration: 'none' }}
-              onMouseEnter={e => e.target.style.color = T.ink}
-              onMouseLeave={e => e.target.style.color = T.muted}
-            >{l}</a>
+            <a
+              key={l}
+              href="#"
+              style={{ fontSize: '0.85rem', color: T.muted, textDecoration: 'none', transition: 'color 0.15s' }}
+              className="hover:text-[#111827]"
+            >
+              {l}
+            </a>
           ))}
         </div>
       </div>
@@ -547,8 +694,8 @@ export default function Home() {
     <div>
       <HeroSection onGenerate={handleGenerate} loading={generating} />
       {genError && (
-        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '16px 20px' }}>
-          <div style={{ border: `1px solid #9f3f34`, background: '#fff5f5', padding: '12px 16px', fontSize: '0.9rem', color: '#9f3f34' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '16px 24px' }}>
+          <div style={{ border: `1px solid #9f3f34`, background: '#fff5f5', padding: '12px 16px', fontSize: '0.88rem', color: '#9f3f34' }}>
             ⚠ {genError}
           </div>
         </div>
