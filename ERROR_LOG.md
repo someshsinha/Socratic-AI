@@ -123,3 +123,30 @@ When repeated development searches hit the YouTube Data API v3 quota (`quotaExce
      - Direct `[ WATCH ON YOUTUBE ↗ ]` action opening the topic query on YouTube.
 3. **Zero Layout Shift**:
    - Preserved identical margin and padding hierarchy matching the surrounding editorial design.
+
+---
+
+## Incident #005: Raw Unrendered LaTeX Formulas in MCQ Knowledge Checks
+
+### Metadata
+- **Date**: August 14, 2026
+- **Component**: Assessment Renderer (`client/src/components/blocks/MCQBlock.jsx`)
+- **Status**: ✅ Resolved
+
+### Error Symptoms & Screenshot Details
+In quantum mechanics and scientific lessons, question prompts such as:
+> *"In quantum mechanics, what physical meaning is attributed to the square of the absolute value of the wave function, |\psi|^2?"*
+
+were displayed with raw, unparsed LaTeX markup (`|\psi|^2?`) instead of formatted mathematical typography ($\lvert\psi\rvert^2$).
+
+### Root Cause
+1. **Direct String Interpolation**: `MCQBlock.jsx` rendered `{question}`, `{option}`, and `{explanation}` as plain unparsed strings instead of passing them through a KaTeX / Markdown pipeline.
+2. **Bare LaTeX Delimiters**: AI-generated quiz questions frequently contain bare LaTeX macros (e.g. `|\psi|^2`, `\frac{a}{b}`, `\hbar`, `\alpha`) without outer markdown `$...$` delimiters, which prevented standard markdown parsers from treating them as inline math.
+
+### Resolution Steps
+1. **Integrated KaTeX Pipeline (`MCQBlock.jsx`)**:
+   - Integrated `ReactMarkdown` with `remark-gfm`, `remark-math` (`{ singleDollar: true }`), and `rehype-katex`.
+2. **LaTeX Math Normalization**:
+   - Implemented `normalizeMath()` utility that automatically detects bare LaTeX expressions, operators, Greek letters, and exponents, wrapping them in `$...$` for KaTeX rendering.
+3. **Full MCQ Coverage**:
+   - Applied math rendering across all question prompts, interactive option choices, explanation feedback cards, and print/PDF views.
