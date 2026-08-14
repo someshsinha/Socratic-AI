@@ -132,3 +132,34 @@ export const getUserCourses = async (req, res, next) => {
     next(err);
   }
 };
+
+export const deleteCourse = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const course = await Course.findById(id);
+    if (!course) {
+      return res.status(404).json({ success: false, error: 'Course not found' });
+    }
+
+    // 1. Find all modules for this course
+    const modules = await Module.find({ course: id });
+    const moduleIds = modules.map((m) => m._id);
+
+    // 2. Cascade delete all lessons associated with these modules
+    await Lesson.deleteMany({ module: { $in: moduleIds } });
+
+    // 3. Delete all modules
+    await Module.deleteMany({ course: id });
+
+    // 4. Delete the course document itself
+    await Course.findByIdAndDelete(id);
+
+    return res.json({
+      success: true,
+      message: 'Course and all related lessons deleted successfully',
+      data: { id },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

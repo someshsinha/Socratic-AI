@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
+import siteConfig from '../config/siteConfig';
 
 /* ────────────────────────────────────────────────────────
    DESIGN TOKENS (matching codingagents.fyi palette)
@@ -17,213 +18,273 @@ const T = {
 };
 
 /* ────────────────────────────────────────────────────────
-   WORKSPACE PANEL (Hero right side) — Fully Visible & Expanded
+   WORKSPACE PANEL (Hero right side) — Matching Actual Course Modules Page
 ──────────────────────────────────────────────────────── */
 function WorkspacePanel() {
-  const [expanded, setExpanded] = useState({ 0: true, 1: false, 2: false });
-  const [activeTab, setActiveTab] = useState('Overview');
-  const toggle = i => setExpanded(p => ({ ...p, [i]: !p[i] }));
+  // Modules 1 & 2 expanded, Module 3 collapsed by default
+  const [expanded, setExpanded] = useState({ 0: true, 1: true, 2: false });
+
+  const toggle = (i) => setExpanded((p) => ({ ...p, [i]: !p[i] }));
+  const expandAll = () => setExpanded({ 0: true, 1: true, 2: true });
+  const collapseAll = () => setExpanded({ 0: false, 1: false, 2: false });
 
   const modules = [
     {
       num: '01',
-      title: 'Foundations & System Models',
+      title: 'Module 1: Foundations & System Models',
       count: 3,
-      duration: '45m',
       lessons: [
-        { code: '1.1', title: 'What is a Distributed System?', tag: 'Theory', time: '12m' },
-        { code: '1.2', title: 'Processes, Networking & RPCs', tag: 'Architecture', time: '18m' },
-        { code: '1.3', title: 'Logical Clocks & Lamport Timestamps', tag: 'Math & Logic', time: '15m' },
+        { code: '01.01', title: 'What is a Distributed System?' },
+        { code: '01.02', title: 'Processes, Networking & RPCs' },
+        { code: '01.03', title: 'Logical Clocks & Lamport Timestamps' },
       ],
     },
     {
       num: '02',
-      title: 'Replication & Consistency Models',
+      title: 'Module 2: Replication & Consistency Models',
       count: 3,
-      duration: '1h 10m',
       lessons: [
-        { code: '2.1', title: 'Primary-Backup Replication', tag: 'State Machine', time: '20m' },
-        { code: '2.2', title: 'Quorums & The CAP Theorem', tag: 'Proofs', time: '25m' },
-        { code: '2.3', title: 'Linearizability vs Eventual Consistency', tag: 'Analysis', time: '25m' },
+        { code: '02.01', title: 'Primary-Backup Replication' },
+        { code: '02.02', title: 'Quorums & The CAP Theorem' },
+        { code: '02.03', title: 'Linearizability vs Eventual Consistency' },
       ],
     },
     {
       num: '03',
-      title: 'Distributed Consensus & Raft',
+      title: 'Module 3: Distributed Consensus & Raft',
       count: 2,
-      duration: '55m',
       lessons: [
-        { code: '3.1', title: 'Leader Election & Heartbeats', tag: 'Protocol', time: '25m' },
-        { code: '3.2', title: 'Log Replication & Safety Invariants', tag: 'Implementation', time: '30m' },
+        { code: '03.01', title: 'Leader Election & Heartbeats' },
+        { code: '03.02', title: 'Log Replication & Safety Invariants' },
       ],
     },
-  ];
-
-  const sideLinks = [
-    { label: 'Overview',  d: 'M4 6h16M4 12h16M4 18h16' },
-    { label: 'Modules',   d: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
-    { label: 'Lessons',   d: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-    { label: 'Resources', d: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' },
-    { label: 'Export',    d: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12' },
   ];
 
   return (
     <div
       className="w-full overflow-hidden card-hover-lift"
-      style={{ border: `1px solid ${T.ink}`, background: T.panel, boxShadow: '0 16px 48px rgba(17,24,39,0.07)' }}
+      style={{
+        border: `1px solid ${T.ink}`,
+        background: T.panel,
+        boxShadow: '0 20px 48px rgba(17,24,39,0.07)',
+      }}
     >
-      {/* Top Header Bar */}
+      {/* Top Terminal / Curriculum Header Bar */}
       <div
-        className="flex items-center justify-between px-4 py-2.5"
-        style={{ borderBottom: `1px solid ${T.line}`, background: T.paper }}
+        className="flex items-center justify-between px-4 py-3 border-b border-[#d8d3c7]"
+        style={{ background: T.paper }}
       >
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#d8d3c7' }} />
-          <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#d8d3c7' }} />
-          <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#d8d3c7' }} />
-          <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: T.muted, marginLeft: 6 }}>
-            Curriculum Engine // Workspace
+          {/* macOS / Terminal colored dots */}
+          <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
+          <span
+            style={{
+              fontFamily: 'ui-monospace,monospace',
+              fontSize: '0.74rem',
+              fontWeight: 800,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: T.green,
+              marginLeft: 8,
+            }}
+          >
+            [CURRICULUM // MODULES]
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full animate-soft-pulse" style={{ background: T.green }} />
-          <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: T.green }}>Ready</span>
+
+        {/* Expand All / Collapse All Controls */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={expandAll}
+            style={{
+              fontFamily: 'ui-monospace,monospace',
+              fontSize: '0.70rem',
+              fontWeight: 700,
+              color: T.ink,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+            className="hover:text-emerald-700 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+            Expand All
+          </button>
+          <span style={{ color: T.line }}>|</span>
+          <button
+            onClick={collapseAll}
+            style={{
+              fontFamily: 'ui-monospace,monospace',
+              fontSize: '0.70rem',
+              fontWeight: 700,
+              color: T.muted,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+            className="hover:text-black transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 9L4 4m0 0l5 5M4 4v4m0-4h4m11 5l5-5m0 0l-5 5m5-5v4m0-4h-4M9 15l-5 5m0 0l5-5m-5 5v-4m0 4h4m11-5l5 5m0 0l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+            Collapse All
+          </button>
         </div>
       </div>
 
-      <div className="flex" style={{ minHeight: 380 }}>
-        {/* Left sidebar - clean and proportional */}
-        <div className="w-38 shrink-0 flex flex-col" style={{ borderRight: `1px solid ${T.line}`, background: 'rgba(251,250,246,0.5)' }}>
-          <div className="px-3.5 py-3" style={{ borderBottom: `1px solid ${T.line}` }}>
-            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.muted, fontWeight: 700, margin: '0 0 3px' }}>Course</p>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: T.ink, lineHeight: 1.25 }}>Distributed Systems</span>
-          </div>
-
-          <nav className="flex-1 py-1.5">
-            {sideLinks.map(({ label, d }) => (
-              <button
-                key={label}
-                onClick={() => setActiveTab(label)}
-                className="w-full flex items-center gap-2 px-3.5 py-1.5 text-left transition-all"
-                style={{
-                  fontSize: '0.74rem',
-                  fontWeight: activeTab === label ? 700 : 500,
-                  color: activeTab === label ? T.ink : T.muted,
-                  background: activeTab === label ? T.panel : 'transparent',
-                  borderRight: activeTab === label ? `2px solid ${T.ink}` : 'none',
-                }}>
-                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d={d} />
-                </svg>
-                {label}
-              </button>
-            ))}
-          </nav>
-
-          <div className="px-3.5 py-3" style={{ borderTop: `1px solid ${T.line}` }}>
-            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.muted, fontWeight: 700, margin: '0 0 5px' }}>Scope</p>
-            <div className="space-y-1">
-              <p style={{ fontSize: '0.72rem', color: T.muted, margin: 0 }}>— 3 Core Modules</p>
-              <p style={{ fontSize: '0.72rem', color: T.muted, margin: 0 }}>— 8 Deep Lessons</p>
-              <p style={{ fontSize: '0.72rem', color: T.muted, margin: 0 }}>— ~2.5h Learning</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Area - Full outline visibility */}
-        <div className="flex-1 flex flex-col min-w-0" style={{ background: T.panel }}>
-          <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: `1px solid ${T.line}` }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: T.ink }}>Generated Curriculum Outline</span>
-            <button
-              onClick={() => setExpanded(p => ({ 0: !p[0], 1: !p[1], 2: !p[2] }))}
-              style={{ fontSize: '0.72rem', color: T.accent, fontWeight: 700, cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+      {/* Modules List matching Image 2 */}
+      <div className="divide-y divide-[#d8d3c7]">
+        {modules.map((mod, i) => (
+          <div key={i} className="transition-colors">
+            {/* Module Header Bar */}
+            <div
+              onClick={() => toggle(i)}
+              className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left cursor-pointer hover:bg-black/[0.015] transition-colors"
             >
-              Expand / Collapse
-            </button>
-          </div>
-
-          {/* Module List */}
-          <div className="flex-1 overflow-auto divide-y divide-[#d8d3c7]">
-            {modules.map((mod, i) => (
-              <div key={i} className="transition-colors">
-                <button
-                  onClick={() => toggle(i)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors hover:bg-black/[0.02]"
+              <div className="flex items-center gap-3.5 min-w-0">
+                {/* Module Number Stamp */}
+                <div
+                  className="w-8 h-8 flex items-center justify-center font-mono text-xs font-black shrink-0"
+                  style={{
+                    background: i === 0 ? T.ink : T.paper,
+                    color: i === 0 ? '#ffffff' : T.ink,
+                    border: `1px solid ${T.ink}`,
+                  }}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span
-                      style={{
-                        width: 22, height: 22, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '0.68rem', fontWeight: 800, fontFamily: 'ui-monospace,monospace', flexShrink: 0,
-                        background: i === 0 ? T.ink : T.paper, color: i === 0 ? 'white' : T.muted,
-                        border: `1px solid ${i === 0 ? T.ink : T.line}`,
-                      }}
-                    >
-                      {mod.num}
-                    </span>
-                    <div className="min-w-0">
-                      <h4 style={{ fontSize: '0.82rem', fontWeight: 700, color: T.ink, margin: 0, lineHeight: 1.25 }} className="truncate">
-                        {mod.title}
-                      </h4>
-                      <span style={{ fontSize: '0.68rem', color: T.muted }}>
-                        {mod.count} structured lessons
+                  {mod.num}
+                </div>
+                <div>
+                  <h3
+                    style={{
+                      fontSize: '0.92rem',
+                      fontWeight: 800,
+                      color: T.ink,
+                      margin: 0,
+                      lineHeight: 1.25,
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    {mod.title}
+                  </h3>
+                  <span style={{ fontSize: '0.72rem', color: T.muted, fontFamily: 'ui-monospace,monospace' }}>
+                    {mod.count} Lessons
+                  </span>
+                </div>
+              </div>
+
+              {/* Chevron */}
+              <div
+                className="w-7 h-7 flex items-center justify-center shrink-0 ml-2"
+                style={{ border: `1px solid ${T.line}`, background: T.paper }}
+              >
+                <svg
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${expanded[i] ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke={T.ink}
+                  strokeWidth="2.2"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Sub-lessons list matching Image 2 */}
+            {expanded[i] && (
+              <div className="px-3.5 sm:px-4 pb-3.5 pt-0.5 space-y-2" style={{ background: 'rgba(251,250,246,0.6)' }}>
+                {mod.lessons.map((lesson) => (
+                  <div
+                    key={lesson.code}
+                    className="flex items-center justify-between px-3.5 py-2.5 card-hover-lift"
+                    style={{
+                      border: `1px solid ${T.line}`,
+                      background: '#ffffff',
+                    }}
+                  >
+                    <div className="flex items-center gap-3 min-w-0 mr-3">
+                      <span
+                        style={{
+                          fontFamily: 'ui-monospace,monospace',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          color: T.muted,
+                        }}
+                        className="shrink-0"
+                      >
+                        {lesson.code}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '0.82rem',
+                          fontWeight: 700,
+                          color: T.ink,
+                          letterSpacing: '-0.01em',
+                        }}
+                        className="truncate"
+                      >
+                        {lesson.title}
                       </span>
                     </div>
-                  </div>
-                  <svg className={`w-4 h-4 shrink-0 transition-transform duration-200 ml-2 ${expanded[i] ? 'rotate-180' : ''}`} fill="none" stroke={T.muted} strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
 
-                {/* Sub-lessons list with full badge visibility */}
-                {expanded[i] && (
-                  <div className="px-4 pb-3 pt-1 space-y-1.5" style={{ background: 'rgba(251,250,246,0.7)' }}>
-                    {mod.lessons.map((lesson) => (
-                      <div
-                        key={lesson.code}
-                        className="flex items-center justify-between px-3 py-2 rounded-sm transition-all hover:bg-white"
-                        style={{ border: `1px solid ${T.line}`, background: 'rgba(255,255,255,0.92)' }}
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0 mr-2">
-                          <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.68rem', fontWeight: 700, color: T.muted }} className="shrink-0">
-                            {lesson.code}
-                          </span>
-                          <span style={{ fontSize: '0.76rem', fontWeight: 600, color: T.ink }} className="truncate">
-                            {lesson.title}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span
-                            style={{
-                              fontFamily: 'ui-monospace,monospace', fontSize: '0.62rem', fontWeight: 700,
-                              padding: '1px 6px', border: `1px solid ${T.line}`, color: T.muted, background: T.paper,
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {lesson.tag}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                    <span
+                      style={{
+                        fontFamily: 'ui-monospace,monospace',
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        color: T.ink,
+                        letterSpacing: '0.04em',
+                      }}
+                      className="shrink-0 hover:underline cursor-pointer"
+                    >
+                      START →
+                    </span>
                   </div>
-                )}
+                ))}
               </div>
-            ))}
+            )}
           </div>
+        ))}
+      </div>
 
-          {/* Bottom live status */}
-          <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderTop: `1px solid ${T.line}`, background: T.paper }}>
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="w-1.5 h-1.5 rounded-full animate-soft-pulse shrink-0" style={{ background: T.accent }} />
-              <span style={{ fontSize: '0.7rem', color: T.muted, fontStyle: 'italic', fontFamily: 'ui-monospace,monospace' }} className="truncate">
-                AI ready to enrich full course notes
-              </span>
-            </div>
-            <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.65rem', color: T.green, fontWeight: 700, whiteSpace: 'nowrap', marginLeft: 8 }} className="shrink-0">
-              100% LATEX & MCQ
-            </span>
-          </div>
+      {/* Bottom Live Status Strip matching Image 2 */}
+      <div
+        className="px-4 py-2.5 flex items-center justify-between border-t border-[#d8d3c7]"
+        style={{ background: T.paper }}
+      >
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full" style={{ background: T.accent }} />
+          <span
+            style={{
+              fontFamily: 'ui-monospace,monospace',
+              fontSize: '0.72rem',
+              color: T.muted,
+              fontStyle: 'italic',
+            }}
+          >
+            Structured academic curriculum
+          </span>
         </div>
+        <span
+          style={{
+            fontFamily: 'ui-monospace,monospace',
+            fontSize: '0.70rem',
+            fontWeight: 800,
+            color: T.green,
+            letterSpacing: '0.04em',
+          }}
+        >
+          100% LATEX READY
+        </span>
       </div>
     </div>
   );
@@ -356,54 +417,105 @@ function HeroSection({ onGenerate, loading }) {
 ──────────────────────────────────────────────────────── */
 function HowItWorks() {
   const steps = [
-    { num: '01', title: 'Ask Anything', desc: 'Enter any topic. Our AI reads your intent and begins structuring a complete learning path around it.' },
-    { num: '02', title: 'AI Builds Curriculum', desc: 'A rigorous course is generated: modules, lessons, code examples, MCQs, and external resources.' },
-    { num: '03', title: 'Learn & Master', desc: 'Study with rich lessons, Hinglish audio, quizzes, and progress tracking. Export to PDF anytime.' },
+    {
+      num: '01',
+      stage: 'INPUT_INTENT',
+      title: 'Ask Anything',
+      desc: 'Enter any topic, question, or technology. Our AI reads your intent and begins structuring a first-principles learning pathway.',
+      tag: 'Natural Language Prompt',
+    },
+    {
+      num: '02',
+      stage: 'CURRICULUM_SYNTHESIS',
+      title: 'AI Builds Curriculum',
+      desc: 'A complete multi-module syllabus is generated with progressive lessons, derivations, code implementations, and self-assessments.',
+      tag: 'Hierarchical Structure',
+    },
+    {
+      num: '03',
+      stage: 'DEEP_MASTERY',
+      title: 'Learn & Master',
+      desc: 'Study rich markdown lessons, listen to native bilingual Hinglish narration, test your retention with quizzes, and export clean PDFs.',
+      tag: 'Active Retention',
+    },
   ];
 
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '72px 0', background: 'rgba(255,255,255,0.7)' }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
-        {/* Section header */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
-          <div>
-            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.green, margin: '0 0 12px' }}>
-              How It Works
-            </p>
-            <h2 style={{ fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-0.01em', color: T.ink, margin: 0 }}>
-              From any topic to mastery in 3 steps
-            </h2>
-          </div>
+    <section style={{ borderTop: `1px solid ${T.line}`, padding: '80px 0', background: 'transparent' }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ marginBottom: 40 }}>
+          <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: T.green, margin: '0 0 12px' }}>
+            [HOW_IT_WORKS // WORKFLOW]
+          </p>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.7rem)', fontWeight: 900, lineHeight: 1.12, letterSpacing: '-0.02em', color: T.ink, margin: 0 }}>
+            From any topic to mastery in 3 steps
+          </h2>
         </div>
 
-        {/* Steps with subtle hover lift */}
-        <div style={{ display: 'flex', alignItems: 'stretch', gap: 0 }} className="flex-col sm:flex-row">
-          {steps.map((step, i) => (
-            <React.Fragment key={i}>
-              <div
-                className="card-hover-lift"
-                style={{ flex: 1, border: `1px solid ${T.line}`, background: T.panel, padding: 24 }}
-              >
-                <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 800, color: T.muted, marginBottom: 12 }}>
-                  {step.num}
-                </p>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: T.ink, margin: '0 0 8px', letterSpacing: '-0.01em' }}>
+        {/* 3 Step Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {steps.map((step) => (
+            <div
+              key={step.num}
+              className="card-hover-lift flex flex-col justify-between"
+              style={{
+                border: `1px solid ${T.ink}`,
+                background: T.panel,
+                padding: '24px 26px',
+                boxShadow: '0 8px 24px rgba(17,24,39,0.04)',
+              }}
+            >
+              <div>
+                {/* Header Strip with Number and Stage */}
+                <div className="flex items-center justify-between pb-3 mb-5 border-b border-[#d8d3c7]">
+                  <div
+                    className="w-8 h-8 flex items-center justify-center font-mono text-xs font-black"
+                    style={{
+                      border: `1px solid ${T.ink}`,
+                      background: T.paper,
+                      color: T.ink,
+                    }}
+                  >
+                    {step.num}
+                  </div>
+                  <span
+                    style={{
+                      fontFamily: 'ui-monospace,monospace',
+                      fontSize: '0.66rem',
+                      fontWeight: 700,
+                      color: T.muted,
+                      letterSpacing: '0.06em',
+                    }}
+                  >
+                    [{step.stage}]
+                  </span>
+                </div>
+
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: T.ink, margin: '0 0 10px', letterSpacing: '-0.01em' }}>
                   {step.title}
                 </h3>
-                <p style={{ fontSize: '0.88rem', color: T.muted, lineHeight: 1.6, margin: 0 }}>
+                <p style={{ fontSize: '0.88rem', color: '#4b5563', lineHeight: 1.65, margin: 0 }}>
                   {step.desc}
                 </p>
               </div>
-              {i < 2 && (
-                <div style={{
-                  width: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderTop: `1px solid ${T.line}`, borderBottom: `1px solid ${T.line}`,
-                  background: T.paper, color: T.muted, fontSize: '0.95rem',
-                }} className="hidden sm:flex">
-                  →
-                </div>
-              )}
-            </React.Fragment>
+
+              {/* Tag pill at bottom */}
+              <div className="pt-5 mt-6 border-t border-[#d8d3c7]">
+                <span
+                  style={{
+                    fontFamily: 'ui-monospace,monospace',
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    color: T.green,
+                    background: 'rgba(47,111,79,0.06)',
+                    border: `1px solid rgba(47,111,79,0.2)`,
+                    padding: '3px 8px',
+                  }}
+                >
+                  ✓ {step.tag}
+                </span>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -416,44 +528,107 @@ function HowItWorks() {
 ──────────────────────────────────────────────────────── */
 function WhatYouGet() {
   const features = [
-    { num: '01', title: 'Structured Lessons', desc: 'Clear, concise and well-organized content with objectives, core derivations, and key takeaways.' },
-    { num: '02', title: 'Rich Resources', desc: 'Curated videos, docs, and external references matched to each lesson topic.' },
-    { num: '03', title: 'Code & Examples', desc: 'Practical code snippets and real-world implementations for every concept.' },
-    { num: '04', title: 'Quizzes & MCQs', desc: 'Built-in knowledge checks after each lesson to reinforce comprehension.' },
-    { num: '05', title: 'Progress Tracking', desc: 'A transparent view of module completion and learning milestones.' },
-    { num: '06', title: 'PDF Export', desc: 'Print-ready textbook-formatted export of any lesson or entire course.' },
+    {
+      code: '01',
+      tag: 'LESSONS',
+      title: 'Structured Lessons',
+      desc: 'Clear, comprehensive and well-organized content with objectives, core mathematical derivations, and key takeaways.',
+    },
+    {
+      code: '02',
+      tag: 'MEDIA',
+      title: 'Rich Video & Resources',
+      desc: 'Curated deep-dive videos, documentation, and external academic references matched to each lesson concept.',
+    },
+    {
+      code: '03',
+      tag: 'CODE',
+      title: 'Code & Implementations',
+      desc: 'Practical code blocks with syntax highlighting, architectural diagrams, and real-world system designs.',
+    },
+    {
+      code: '04',
+      tag: 'ASSESSMENT',
+      title: 'Quizzes & MCQs',
+      desc: 'Built-in interactive knowledge checks after each lesson to reinforce retention and test core conceptual mastery.',
+    },
+    {
+      code: '05',
+      tag: 'TRACKING',
+      title: 'Progress Tracking',
+      desc: 'A granular view of module milestones, lesson completion status, and personal learning roadmaps.',
+    },
+    {
+      code: '06',
+      tag: 'EXPORT',
+      title: 'Print & PDF Export',
+      desc: 'Clean textbook-grade LaTeX-formatted PDF export of any lesson or the entire course for distraction-free offline study.',
+    },
   ];
 
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '72px 0', background: 'transparent' }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
+    <section style={{ borderTop: `1px solid ${T.line}`, padding: '80px 0', background: 'transparent' }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.green, margin: '0 0 12px' }}>
-              What You Get
+            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: T.green, margin: '0 0 12px' }}>
+              [CURRICULUM_COMPONENTS // SPECIFICATION]
             </p>
-            <h2 style={{ fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-0.01em', color: T.ink, margin: 0 }}>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.7rem)', fontWeight: 900, lineHeight: 1.12, letterSpacing: '-0.02em', color: T.ink, margin: 0 }}>
               Everything you need to learn better
             </h2>
           </div>
-          <p style={{ color: T.muted, maxWidth: 360, fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
-            Every generated course comes completely structured out of the box.
+          <p style={{ color: T.muted, maxWidth: 380, fontSize: '0.92rem', lineHeight: 1.6, margin: 0 }}>
+            Every generated course comes completely structured out of the box with polymorphic learning blocks.
           </p>
         </div>
 
-        {/* 3-column grid with bordered cards + lift */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        {/* 3x2 Component Matrix */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {features.map((f) => (
             <div
-              key={f.num}
-              className="card-hover-lift"
-              style={{ border: `1px solid ${T.line}`, background: T.panel, padding: 20 }}
+              key={f.code}
+              className="card-hover-lift flex flex-col justify-between"
+              style={{
+                border: `1px solid ${T.line}`,
+                background: T.panel,
+                padding: '22px 24px',
+              }}
             >
-              <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.7rem', fontWeight: 800, color: T.muted, marginBottom: 8 }}>
-                {f.num}
-              </p>
-              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: T.ink, margin: '0 0 6px' }}>{f.title}</h3>
-              <p style={{ fontSize: '0.84rem', color: T.muted, lineHeight: 1.55, margin: 0 }}>{f.desc}</p>
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span
+                    style={{
+                      fontFamily: 'ui-monospace,monospace',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      color: T.ink,
+                      border: `1px solid ${T.line}`,
+                      background: T.paper,
+                      padding: '2px 8px',
+                    }}
+                  >
+                    {f.code}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'ui-monospace,monospace',
+                      fontSize: '0.66rem',
+                      fontWeight: 700,
+                      color: T.muted,
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    [{f.tag}]
+                  </span>
+                </div>
+                <h3 style={{ fontSize: '1.02rem', fontWeight: 800, color: T.ink, margin: '0 0 8px', letterSpacing: '-0.01em' }}>
+                  {f.title}
+                </h3>
+                <p style={{ fontSize: '0.86rem', color: '#4b5563', lineHeight: 1.6, margin: 0 }}>
+                  {f.desc}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -463,48 +638,136 @@ function WhatYouGet() {
 }
 
 /* ────────────────────────────────────────────────────────
-   ANIMATED AUDIO PLAYER
+   ANIMATED AUDIO PLAYER (Real Hinglish Narration via Web Speech)
 ──────────────────────────────────────────────────────── */
 function AnimatedAudioPlayer() {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState('Lesson');
-  const intervalRef = useRef(null);
-  const DURATION = 324;
+  const [activeTab, setActiveTab] = useState('Overview');
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const utterancesRef = useRef([]);
+
+  // High-quality Hinglish narrative describing Socratic AI
+  const HINGLISH_SCRIPT =
+    "Namaste! Socratic AI ek smart learning platform hai jo kisi bhi topic ko ek structured, step-by-step academic course mein badal deta hai. Chahe aap distributed systems padh rahe ho ya computer architecture, yahan aapko milte hain rigorous lessons, LaTeX formulas, code implementations, aur self-assessments. Seekhna shuru kijiye!";
 
   const bars = useRef(
-    Array.from({ length: 48 }, (_, i) => Math.max(0.08, Math.min(0.95, 0.5 + Math.sin(i * 0.4) * 0.4 + Math.sin(i * 0.9) * 0.3)))
+    Array.from({ length: 48 }, (_, i) => Math.max(0.12, Math.min(0.95, 0.45 + Math.sin(i * 0.4) * 0.35 + Math.cos(i * 0.8) * 0.25)))
   ).current;
 
-  const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-
+  // Load voices on mount
   useEffect(() => {
-    if (playing) {
-      intervalRef.current = setInterval(() => {
-        setProgress(p => { if (p >= 1) { setPlaying(false); return 0; } return p + 1 / DURATION / 10; });
-      }, 100);
-    } else { clearInterval(intervalRef.current); }
-    return () => clearInterval(intervalRef.current);
-  }, [playing]);
+    const loadVoices = () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        setAvailableVoices(window.speechSynthesis.getVoices());
+      }
+    };
+    loadVoices();
+    if (typeof window !== 'undefined' && window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+    return () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
-  const elapsed = Math.floor(progress * DURATION);
-  const activeBars = Math.floor(progress * bars.length);
-  const tabs = ['Lesson', 'Notes', 'Transcript', 'Resources'];
+  const handleTogglePlay = () => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+    if (playing) {
+      window.speechSynthesis.cancel();
+      setPlaying(false);
+      setProgress(0);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    // Prepare sentence chunks for smooth progressive playback
+    const rawChunks = HINGLISH_SCRIPT.match(/[^.!?]+[.!?]*/g) || [HINGLISH_SCRIPT];
+    const chunks = rawChunks.map(c => c.trim()).filter(Boolean);
+
+    const indianVoice =
+      availableVoices.find(v => v.lang === 'hi-IN') ||
+      availableVoices.find(v => v.lang === 'en-IN') ||
+      availableVoices.find(v => v.default) ||
+      availableVoices[0];
+
+    const playChunk = (index) => {
+      if (index >= chunks.length) {
+        setPlaying(false);
+        setProgress(1);
+        setTimeout(() => setProgress(0), 1000);
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(chunks[index]);
+      if (indianVoice) utterance.voice = indianVoice;
+      utterance.rate = 0.95; // Natural conversational tempo
+      utterance.pitch = 1.0;
+
+      utterance.onstart = () => {
+        setProgress((index / chunks.length));
+      };
+
+      utterance.onend = () => {
+        setProgress(((index + 1) / chunks.length));
+        playChunk(index + 1);
+      };
+
+      utterance.onerror = (e) => {
+        if (e.error !== 'interrupted' && e.error !== 'canceled') {
+          console.warn('Speech error:', e);
+        }
+        setPlaying(false);
+      };
+
+      utterancesRef.current.push(utterance);
+      window.speechSynthesis.speak(utterance);
+    };
+
+    setPlaying(true);
+    playChunk(0);
+  };
+
+  const tabs = ['Overview', 'Transcript', 'Notes'];
 
   return (
     <div
       className="card-hover-lift"
-      style={{ border: `1px solid ${T.ink}`, background: T.panel, boxShadow: '0 16px 48px rgba(17,24,39,0.06)' }}
+      style={{
+        border: `1px solid ${T.ink}`,
+        background: T.panel,
+        boxShadow: '0 20px 48px rgba(17,24,39,0.07)',
+      }}
     >
+      {/* Top Header */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#d8d3c7]" style={{ background: T.paper }}>
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
+          <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.72rem', fontWeight: 800, color: T.green, marginLeft: 6 }}>
+            [AUDIO_SYNTHESIS // HINGLISH_PLAYER]
+          </span>
+        </div>
+        <span className="flex items-center gap-1.5 font-mono text-[10px] text-gray-500 font-semibold">
+          <span className={`w-2 h-2 rounded-full ${playing ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`} />
+          {playing ? 'STREAMING AUDIO' : 'INTERACTIVE'}
+        </span>
+      </div>
+
       {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: `1px solid ${T.line}` }}>
+      <div style={{ display: 'flex', borderBottom: `1px solid ${T.line}`, background: 'rgba(251,250,246,0.6)' }}>
         {tabs.map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             style={{
-              flex: 1, padding: '10px 6px', fontSize: '0.75rem', fontWeight: 600, fontFamily: 'inherit',
-              background: 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.15s',
+              flex: 1, padding: '10px 6px', fontSize: '0.74rem', fontWeight: 700, fontFamily: 'ui-monospace,monospace',
+              background: activeTab === tab ? T.panel : 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.15s',
               color: activeTab === tab ? T.ink : T.muted,
               borderBottom: activeTab === tab ? `2px solid ${T.ink}` : '2px solid transparent',
             }}
@@ -514,70 +777,117 @@ function AnimatedAudioPlayer() {
         ))}
       </div>
 
-      <div style={{ padding: 20 }}>
+      {/* Tab Body */}
+      <div style={{ padding: '20px 22px' }}>
+        {activeTab === 'Overview' && (
+          <div className="mb-4">
+            <p style={{ fontSize: '0.86rem', color: '#374151', lineHeight: 1.6, margin: '0 0 10px' }}>
+              <strong>Socratic AI</strong> structures any subject into modular lessons, mathematical LaTeX notes, and interactive knowledge checks.
+            </p>
+            <p style={{ fontSize: '0.78rem', color: T.muted, fontFamily: 'ui-monospace,monospace', margin: 0 }}>
+              Press play below to hear the bilingual voice walkthrough in natural Hinglish.
+            </p>
+          </div>
+        )}
+
+        {activeTab === 'Transcript' && (
+          <div className="mb-4 p-3 bg-amber-50/50 border border-amber-200/60 rounded-xs">
+            <p style={{ fontSize: '0.82rem', color: '#1f2937', lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>
+              "{HINGLISH_SCRIPT}"
+            </p>
+          </div>
+        )}
+
+        {activeTab === 'Notes' && (
+          <div className="mb-4 space-y-1.5">
+            <div className="text-[12px] text-gray-700 flex items-center gap-2">
+              <span className="font-mono text-emerald-700 font-bold">01.</span> First-principles syllabi generation
+            </div>
+            <div className="text-[12px] text-gray-700 flex items-center gap-2">
+              <span className="font-mono text-emerald-700 font-bold">02.</span> Synchronized bilingual speech narration
+            </div>
+            <div className="text-[12px] text-gray-700 flex items-center gap-2">
+              <span className="font-mono text-emerald-700 font-bold">03.</span> Exportable LaTeX textbook notes
+            </div>
+          </div>
+        )}
+
+        {/* Audio Player Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
           {/* Play button */}
           <button
-            onClick={() => setPlaying(p => !p)}
+            onClick={handleTogglePlay}
             style={{
-              width: 40, height: 40, flexShrink: 0, border: `1px solid ${T.ink}`,
-              background: playing ? T.ink : T.panel, color: playing ? T.panel : T.ink,
+              width: 44, height: 44, flexShrink: 0, border: `1px solid ${T.ink}`,
+              background: playing ? '#991b1b' : T.ink, color: '#ffffff',
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 0.15s',
             }}
-            className="hover:-translate-y-px active:translate-y-0"
+            className="hover:-translate-y-px active:translate-y-0 shadow-xs cursor-pointer"
+            title={playing ? "Stop Narration" : "Listen in Hinglish"}
           >
             {playing ? (
-              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" /></svg>
+              <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" /></svg>
             ) : (
-              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style={{ marginLeft: 2 }}><path d="M8 5v14l11-7z" /></svg>
+              <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24" style={{ marginLeft: 2 }}><path d="M8 5v14l11-7z" /></svg>
             )}
           </button>
 
-          {/* Waveform */}
+          {/* Dynamic Waveform */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 36 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 34 }}>
               {bars.map((h, i) => (
                 <div
                   key={i}
                   style={{
-                    flex: 1, height: `${h * 100}%`, borderRadius: 1,
-                    background: i < activeBars ? T.ink : T.line,
-                    transition: 'background 0.05s',
+                    flex: 1,
+                    height: playing ? `${Math.max(15, (h * 100 * (0.6 + Math.sin(Date.now() / 200 + i) * 0.4)))}%` : `${h * 100}%`,
+                    borderRadius: 1,
+                    background: (i / bars.length) < progress ? T.purple : playing ? T.ink : '#d8d3c7',
+                    transition: 'height 0.1s ease, background 0.1s ease',
                   }}
                 />
               ))}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'ui-monospace,monospace', fontSize: '0.68rem', color: T.muted }}>
-              <span>{fmt(elapsed)}</span><span>{fmt(DURATION)}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'ui-monospace,monospace', fontSize: '0.68rem', color: T.muted, fontWeight: 600 }}>
+              <span>{playing ? 'PLAYING...' : '00:00'}</span>
+              <span>HINGLISH VOICE</span>
             </div>
           </div>
 
           {/* Hinglish badge */}
-          <button style={{
-            border: `1px solid ${T.line}`, padding: '5px 8px', fontSize: '0.7rem', fontWeight: 700,
-            color: T.muted, background: T.paper, cursor: 'pointer', fontFamily: 'ui-monospace,monospace',
-            whiteSpace: 'nowrap',
-          }}>
-            ◉ Hinglish Audio
+          <button
+            onClick={handleTogglePlay}
+            style={{
+              border: `1px solid ${playing ? T.purple : T.line}`,
+              padding: '6px 10px',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              color: playing ? '#ffffff' : T.purple,
+              background: playing ? T.purple : T.paper,
+              fontFamily: 'ui-monospace,monospace',
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
+            }}
+          >
+            {playing ? '■ STOP AUDIO' : '▶ PLAY HINGLISH'}
           </button>
         </div>
 
-        {/* Progress bar */}
-        <div
-          onClick={e => { const r = e.currentTarget.getBoundingClientRect(); setProgress(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))); }}
-          style={{ height: 4, background: T.line, cursor: 'pointer', marginBottom: 12 }}
-        >
-          <div style={{ height: '100%', background: T.ink, width: `${progress * 100}%`, transition: 'width 0.1s' }} />
+        {/* Progress Bar */}
+        <div style={{ height: 4, background: '#e5e2d9', marginBottom: 12, overflow: 'hidden' }}>
+          <div style={{ height: '100%', background: T.purple, width: `${progress * 100}%`, transition: 'width 0.2s linear' }} />
         </div>
 
-        {/* Download */}
-        <button style={{ fontSize: '0.76rem', fontWeight: 600, color: T.muted, background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Download PDF
-        </button>
+        {/* Bottom Spec Strip */}
+        <div className="flex items-center justify-between pt-2 border-t border-[#d8d3c7]">
+          <span style={{ fontSize: '0.72rem', fontFamily: 'ui-monospace,monospace', color: T.muted }}>
+            Engine // Web Speech Synthesis
+          </span>
+          <span style={{ fontSize: '0.72rem', fontFamily: 'ui-monospace,monospace', color: T.green, fontWeight: 700 }}>
+            0 SERVER LATENCY • CLIENT-SIDE
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -588,29 +898,54 @@ function AnimatedAudioPlayer() {
 ──────────────────────────────────────────────────────── */
 function HinglishSection() {
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '72px 0', background: 'rgba(255,255,255,0.7)' }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(320px, 0.9fr)', gap: 48, alignItems: 'center' }}>
-          {/* Left */}
-          <div>
-            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.green, margin: '0 0 16px' }}>
-              Learn In Your Language
-            </p>
-            <h2 style={{ fontSize: 'clamp(1.7rem, 3.5vw, 2.6rem)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-0.01em', color: T.ink, margin: '0 0 20px' }}>
-              In English.<br />In Hinglish.<br />Your choice.
-            </h2>
-            <div style={{ display: 'grid', gap: 10 }}>
-              {['English explanations for global learners', 'Hinglish audio narration for better retention', 'Download notes and PDFs anytime', 'Works on desktop, tablet, and mobile'].map((item, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, borderTop: `1px solid ${T.line}`, paddingTop: 10 }}>
-                  <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.68rem', fontWeight: 800, color: T.green, flexShrink: 0, paddingTop: 2 }}>✓</span>
-                  <span style={{ fontSize: '0.88rem', color: T.muted, lineHeight: 1.55 }}>{item}</span>
+    <section style={{ borderTop: `1px solid ${T.line}`, padding: '80px 0', background: 'rgba(255,255,255,0.6)' }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Left Column */}
+          <div className="lg:col-span-6 space-y-6">
+            <div>
+              <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: T.green, margin: '0 0 12px' }}>
+                [BILINGUAL_PEDAGOGY // NATIVE_VOICE]
+              </p>
+              <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.02em', color: T.ink, margin: '0 0 16px' }}>
+                In English.<br />In Hinglish.<br /><span style={{ color: T.purple }}>Your choice.</span>
+              </h2>
+              <p style={{ fontSize: '0.96rem', color: '#4b5563', lineHeight: 1.68, margin: 0 }}>
+                Complex ideas click fastest when explained in natural conversational language. Socratic AI pairs textbook-level English mathematical prose with intuitive, bilingual Hinglish audio narration.
+              </p>
+            </div>
+
+            {/* Feature Pills Matrix */}
+            <div className="space-y-3 pt-2">
+              {[
+                { title: 'Global Academic Depth', desc: 'Precise English definitions, LaTeX equations, and structured theorems.' },
+                { title: 'Conversational Hinglish Audio', desc: 'Bilingual audio breakdowns that explain tricky nuances naturally.' },
+                { title: 'Synced Multimodal Learning', desc: 'Listen to spoken lessons while reading through interactive code and quizzes.' },
+                { title: 'Distraction-Free PDF Export', desc: 'Download print-ready textbook notes anytime for offline study.' },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  style={{
+                    border: `1px solid ${T.line}`,
+                    background: T.panel,
+                    padding: '14px 18px',
+                  }}
+                  className="card-hover-lift flex items-start gap-3.5"
+                >
+                  <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.78rem', fontWeight: 800, color: T.green, flexShrink: 0, marginTop: 2 }}>✓</span>
+                  <div>
+                    <h4 style={{ fontSize: '0.90rem', fontWeight: 800, color: T.ink, margin: '0 0 2px' }}>{item.title}</h4>
+                    <p style={{ fontSize: '0.80rem', color: T.muted, margin: 0, lineHeight: 1.5 }}>{item.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right: Audio player */}
-          <AnimatedAudioPlayer />
+          {/* Right Column: Audio player */}
+          <div className="lg:col-span-6">
+            <AnimatedAudioPlayer />
+          </div>
         </div>
       </div>
     </section>
@@ -640,22 +975,52 @@ function QuoteSection() {
 ──────────────────────────────────────────────────────── */
 function Footer() {
   return (
-    <footer style={{ borderTop: `1px solid ${T.line}`, color: T.muted, padding: '28px 0 40px', background: T.paper }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
-        <p style={{ fontSize: '0.85rem', margin: 0 }}>
+    <footer
+      style={{
+        borderTop: `1px solid ${T.line}`,
+        color: T.muted,
+        padding: '24px 0',
+        background: 'rgba(251, 250, 246, 0.92)',
+        backdropFilter: 'blur(8px)',
+        width: '100%',
+      }}
+      className="mt-auto"
+    >
+      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
+        <p style={{ fontSize: '0.82rem', margin: 0, fontFamily: 'ui-monospace,monospace' }}>
           A portfolio project by{' '}
-          <a href="https://github.com/someshsinha" style={{ color: T.ink, fontWeight: 700 }}>@someshsinha</a>
+          <a href={siteConfig.creator.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: T.ink, fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
+            {siteConfig.creator.handle}
+          </a>
         </p>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          {['GitHub', 'About', 'Contact'].map(l => (
-            <a
-              key={l}
-              href="#"
-              style={{ fontSize: '0.85rem', color: T.muted, textDecoration: 'none', transition: 'color 0.15s' }}
-              className="hover:text-[#111827]"
-            >
-              {l}
-            </a>
+        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+          {[
+            { label: 'GitHub', href: siteConfig.links.githubRepo, external: true },
+            { label: 'About', href: '/about', external: false },
+            { label: 'Courses', href: '/my-courses', external: false },
+            { label: 'Contact', href: siteConfig.creator.mailtoUrl, external: true },
+          ].map(item => (
+            item.external ? (
+              <a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '0.80rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
+                className="hover:text-[#111827] transition-colors"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <Link
+                key={item.label}
+                to={item.href}
+                style={{ fontSize: '0.80rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
+                className="hover:text-[#111827] transition-colors"
+              >
+                {item.label}
+              </Link>
+            )
           ))}
         </div>
       </div>
@@ -688,7 +1053,7 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className="flex-1 flex flex-col justify-between">
       <HeroSection onGenerate={handleGenerate} loading={generating} />
       {genError && (
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '16px 24px' }}>

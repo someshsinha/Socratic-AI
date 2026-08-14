@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import logoImg from '../assets/logo.png';
+import siteConfig from '../config/siteConfig';
 
 export default function Navbar() {
   const { isAuthenticated, loginWithRedirect, logout, user, isLoading } = useAuth0();
@@ -77,7 +78,7 @@ export default function Navbar() {
 
   const displayName = getDisplayName();
   const initials = getInitials();
-  const displayEmail = user?.email || 'someshsinha902@gmail.com';
+  const displayEmail = user?.email || siteConfig.creator.email;
 
   return (
     <nav
@@ -109,18 +110,6 @@ export default function Navbar() {
             }
           >
             About
-          </NavLink>
-          <NavLink
-            to="/docs"
-            className={({ isActive }) =>
-              `px-3 py-1.5 text-sm font-medium border transition-all ${
-                isActive
-                  ? 'border-[#111827] bg-white text-[#111827]'
-                  : 'border-transparent text-[#5f6673] hover:border-[#d8d3c7] hover:bg-white/70 hover:text-[#111827]'
-              }`
-            }
-          >
-            Docs
           </NavLink>
         </div>
 
@@ -280,20 +269,6 @@ export default function Navbar() {
             })}
           >
             About
-          </NavLink>
-          <NavLink
-            to="/docs"
-            onClick={() => setMobileMenuOpen(false)}
-            className={({ isActive }) =>
-              `block px-3 py-2 text-sm border ${isActive ? 'font-semibold' : ''}`
-            }
-            style={({ isActive }) => ({
-              borderColor: isActive ? '#111827' : 'transparent',
-              background: isActive ? 'white' : 'transparent',
-              color: isActive ? '#111827' : '#5f6673',
-            })}
-          >
-            Docs
           </NavLink>
 
           {isAuthenticated ? (

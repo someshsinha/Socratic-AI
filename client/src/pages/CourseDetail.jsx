@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import siteConfig from '../config/siteConfig';
 
 /* ────────────────────────────────────────────────────────
    DESIGN TOKENS (Socratic AI Editorial Template)
@@ -157,8 +158,8 @@ export default function CourseDetail() {
   const firstLessonId = course.modules?.[0]?.lessons?.[0]?._id;
 
   return (
-    <div style={{ background: 'transparent', minHeight: '100vh', color: T.ink }}>
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '40px 24px 72px' }}>
+    <div className="flex-1 flex flex-col justify-between" style={{ background: 'transparent', color: T.ink }}>
+      <div className="flex-1" style={{ maxWidth: 1240, width: '100%', margin: '0 auto', padding: '40px 24px 72px' }}>
         
         {/* Breadcrumb Back Link */}
         <div className="mb-6">
@@ -285,66 +286,42 @@ export default function CourseDetail() {
                   [ START COURSE → ]
                 </button>
 
-                {/* SECONDARY ACTIONS: LaTeX PDF & Audio Utilities */}
-                <div className="space-y-2 pt-1">
-                  <button
-                    onClick={() => alert('LaTeX PDF compiled for this course.')}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '10px 14px',
-                      border: `1px solid ${T.line}`,
-                      background: T.panel,
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      color: T.ink,
-                      cursor: 'pointer',
-                      fontFamily: 'ui-monospace,monospace',
-                    }}
-                    className="hover:border-gray-900 transition-colors"
+                {/* SECONDARY ACTION: Audio Narration */}
+                <button
+                  onClick={() => {
+                    if (firstLessonId) {
+                      navigate(`/lesson/${firstLessonId}?autoplay=narration`);
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 18px',
+                    border: `1px solid ${T.ink}`,
+                    background: '#ffffff',
+                    color: T.ink,
+                    fontSize: '0.82rem',
+                    fontWeight: 750,
+                    cursor: 'pointer',
+                    fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
+                    letterSpacing: '0.04em',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                  }}
+                  className="hover:-translate-y-px active:translate-y-0 hover:bg-[#fbfaf6] hover:border-black transition-all shadow-xs group"
+                >
+                  <svg
+                    className="w-4 h-4 text-indigo-600 group-hover:scale-110 transition-transform shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
                   >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-3.5 h-3.5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <span>Generate Final LaTeX PDF</span>
-                    </div>
-                    <span className="text-[10px] text-gray-500 font-mono">PDF</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      if (firstLessonId) {
-                        navigate(`/lesson/${firstLessonId}`);
-                      }
-                    }}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '10px 14px',
-                      border: `1px solid ${T.line}`,
-                      background: T.panel,
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      color: T.ink,
-                      cursor: 'pointer',
-                      fontFamily: 'ui-monospace,monospace',
-                    }}
-                    className="hover:border-gray-900 transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
-                      </svg>
-                      <span>Listen to Audio Narration</span>
-                    </div>
-                    <span className="text-[10px] text-indigo-600 font-mono">AUDIO</span>
-                  </button>
-                </div>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
+                  </svg>
+                  <span>[ LISTEN TO AUDIO NARRATION ]</span>
+                </button>
               </div>
             </div>
           </div>
@@ -621,22 +598,52 @@ export default function CourseDetail() {
       </div>
 
       {/* ── Footer ── */}
-      <footer style={{ borderTop: `1px solid ${T.line}`, color: T.muted, padding: '22px 0 32px', background: T.paper }}>
+      <footer
+        style={{
+          borderTop: `1px solid ${T.line}`,
+          color: T.muted,
+          padding: '24px 0',
+          background: 'rgba(251, 250, 246, 0.92)',
+          backdropFilter: 'blur(8px)',
+          width: '100%',
+        }}
+        className="mt-auto"
+      >
         <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
-          <p style={{ fontSize: '0.85rem', margin: 0 }}>
+          <p style={{ fontSize: '0.82rem', margin: 0, fontFamily: 'ui-monospace,monospace' }}>
             A portfolio project by{' '}
-            <a href="https://github.com/someshsinha" style={{ color: T.ink, fontWeight: 700 }}>@someshsinha</a>
+            <a href={siteConfig.creator.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: T.ink, fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
+              {siteConfig.creator.handle}
+            </a>
           </p>
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            {['GitHub', 'About', 'Contact'].map(l => (
-              <a
-                key={l}
-                href="#"
-                style={{ fontSize: '0.85rem', color: T.muted, textDecoration: 'none', transition: 'color 0.15s' }}
-                className="hover:text-[#111827]"
-              >
-                {l}
-              </a>
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+            {[
+              { label: 'GitHub', href: siteConfig.links.githubRepo, external: true },
+              { label: 'About', href: '/about', external: false },
+              { label: 'Courses', href: '/my-courses', external: false },
+              { label: 'Contact', href: siteConfig.creator.mailtoUrl, external: true },
+            ].map(item => (
+              item.external ? (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: '0.80rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
+                  className="hover:text-[#111827] transition-colors"
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  style={{ fontSize: '0.80rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
+                  className="hover:text-[#111827] transition-colors"
+                >
+                  {item.label}
+                </Link>
+              )
             ))}
           </div>
         </div>

@@ -16,9 +16,9 @@ function App() {
   }, [isAuthenticated, getAccessTokenSilently]);
 
   return (
-    <div className="min-h-screen" style={{ background: '#fbfaf6', color: '#111827' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: '#fbfaf6', color: '#111827' }}>
       <Navbar />
-      <main style={{ position: 'relative' }}>
+      <main className="flex-1 flex flex-col" style={{ position: 'relative' }}>
         <Outlet />
       </main>
     </div>

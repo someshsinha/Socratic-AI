@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 
-export default function NarrateButton({ lessonId }) {
+export default function NarrateButton({ lessonId, autoPlay = false }) {
   const [state, setState] = useState('idle'); // idle | fetching | ready | playing | error
   const [errorMsg, setErrorMsg] = useState('');
   const [hinglishText, setHinglishText] = useState(null);
@@ -51,6 +51,19 @@ export default function NarrateButton({ lessonId }) {
     loadTranslation();
     return () => { isMounted = false; };
   }, [lessonId]);
+
+  // 2b. Auto-play: if autoPlay prop is true, trigger playback once translation is ready
+  const autoPlayFired = useRef(false);
+  useEffect(() => {
+    if (autoPlay && state === 'ready' && hinglishText && !autoPlayFired.current) {
+      autoPlayFired.current = true;
+      // Small delay to ensure voices are loaded and DOM is settled
+      const timer = setTimeout(() => {
+        handlePlay();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [autoPlay, state, hinglishText]);
 
   const handlePlay = () => {
     if (state === 'playing') {

@@ -27,4 +27,7 @@ router.post('/', [
   validate
 ], courseController.createCourse);
 
+// Delete course
+router.delete('/:id', checkJwtOptional, courseController.deleteCourse);
+
 export default router;

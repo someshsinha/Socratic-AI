@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import LessonRenderer from '../components/LessonRenderer';
 import NarrateButton from '../components/NarrateButton';
+import siteConfig from '../config/siteConfig';
 
 /* ────────────────────────────────────────────────────────
    DESIGN TOKENS (Socratic AI Editorial Template)
@@ -21,6 +22,8 @@ const T = {
 export default function LessonViewer() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const shouldAutoPlayNarration = searchParams.get('autoplay') === 'narration';
   const [lesson, setLesson] = useState(null);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -230,8 +233,8 @@ export default function LessonViewer() {
   const activeIdx = tocItems.findIndex(item => item.id === activeSectionId);
 
   return (
-    <div style={{ background: 'transparent', minHeight: '100vh', color: T.ink }}>
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '36px 24px 72px' }}>
+    <div className="flex-1 flex flex-col justify-between" style={{ background: 'transparent', color: T.ink }}>
+      <div className="flex-1" style={{ maxWidth: 1240, width: '100%', margin: '0 auto', padding: '36px 24px 72px' }}>
         
         {/* Navigation & Header Toolbar */}
         <div className="mb-6 flex items-center justify-between gap-4 print:hidden">
@@ -252,7 +255,7 @@ export default function LessonViewer() {
 
           {/* Compact Actions */}
           <div className="flex items-center gap-3">
-            <NarrateButton lessonId={lesson._id} />
+            <NarrateButton lessonId={lesson._id} autoPlay={shouldAutoPlayNarration} />
             <button
               onClick={handleDownloadPdf}
               style={{
@@ -285,16 +288,16 @@ export default function LessonViewer() {
           <main className="lg:col-span-8 space-y-8 min-w-0">
             
             {/* Lesson Header Title */}
-            <div className="border-b border-[#d8d3c7] pb-6 space-y-3">
+            <div className="border-b border-[#d8d3c7] pb-6">
               <p
                 style={{
                   fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-                  fontSize: '0.74rem',
+                  fontSize: '0.75rem',
                   fontWeight: 700,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   color: T.green,
-                  margin: 0,
+                  margin: '0 0 14px',
                 }}
               >
                 [LESSON // STUDY_NOTES]
@@ -307,7 +310,7 @@ export default function LessonViewer() {
                   letterSpacing: '-0.02em',
                   lineHeight: 1.12,
                   color: T.ink,
-                  margin: 0,
+                  margin: '0 0 14px',
                 }}
               >
                 {lesson.title.endsWith('.') ? lesson.title : `${lesson.title}.`}
@@ -526,22 +529,52 @@ export default function LessonViewer() {
       </div>
 
       {/* ── Footer ── */}
-      <footer className="print:hidden" style={{ borderTop: `1px solid ${T.line}`, color: T.muted, padding: '22px 0 32px', background: T.paper }}>
+      <footer
+        className="print:hidden mt-auto"
+        style={{
+          borderTop: `1px solid ${T.line}`,
+          color: T.muted,
+          padding: '24px 0',
+          background: 'rgba(251, 250, 246, 0.92)',
+          backdropFilter: 'blur(8px)',
+          width: '100%',
+        }}
+      >
         <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
-          <p style={{ fontSize: '0.85rem', margin: 0 }}>
+          <p style={{ fontSize: '0.82rem', margin: 0, fontFamily: 'ui-monospace,monospace' }}>
             A portfolio project by{' '}
-            <a href="https://github.com/someshsinha" style={{ color: T.ink, fontWeight: 700 }}>@someshsinha</a>
+            <a href={siteConfig.creator.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: T.ink, fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
+              {siteConfig.creator.handle}
+            </a>
           </p>
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            {['GitHub', 'About', 'Contact'].map(l => (
-              <a
-                key={l}
-                href="#"
-                style={{ fontSize: '0.85rem', color: T.muted, textDecoration: 'none', transition: 'color 0.15s' }}
-                className="hover:text-[#111827]"
-              >
-                {l}
-              </a>
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+            {[
+              { label: 'GitHub', href: siteConfig.links.githubRepo, external: true },
+              { label: 'About', href: '/about', external: false },
+              { label: 'Courses', href: '/my-courses', external: false },
+              { label: 'Contact', href: siteConfig.creator.mailtoUrl, external: true },
+            ].map(item => (
+              item.external ? (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: '0.80rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
+                  className="hover:text-[#111827] transition-colors"
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  style={{ fontSize: '0.80rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
+                  className="hover:text-[#111827] transition-colors"
+                >
+                  {item.label}
+                </Link>
+              )
             ))}
           </div>
         </div>
