@@ -150,3 +150,81 @@ were displayed with raw, unparsed LaTeX markup (`|\psi|^2?`) instead of formatte
    - Implemented `normalizeMath()` utility that automatically detects bare LaTeX expressions, operators, Greek letters, and exponents, wrapping them in `$...$` for KaTeX rendering.
 3. **Full MCQ Coverage**:
    - Applied math rendering across all question prompts, interactive option choices, explanation feedback cards, and print/PDF views.
+
+---
+
+## Incident #006: Mobile Responsiveness — Cramped Layout & Insufficient Spacing
+
+### Metadata
+- **Date**: August 14, 2026
+- **Component**: All pages (`Home.jsx`, `About.jsx`, `CourseDetail.jsx`, `MyCourses.jsx`, `LessonViewer.jsx`) & Global CSS (`index.css`)
+- **Status**: ✅ Resolved
+
+### Error Symptoms
+On mobile viewports (≤640px), all pages exhibited severe visual crowding:
+- Elements were jammed together with insufficient breathing room between sections.
+- Page wrappers used only `px-4 py-5` (16px / 20px) padding — insufficient for comfortable reading on small screens.
+- Font and component sizes did not scale down proportionally, causing overflow and visual asymmetry.
+- Individual sections (Hero, HowItWorks, WhatYouGet, HinglishSection, QuoteSection) had no consistent vertical rhythm.
+
+### Root Cause
+1. **No Global Spacing Contract**: Each page and section hardcoded its own padding/margin inconsistently. There was no shared responsive spacing system.
+2. **Flat Mobile Padding**: All page wrappers used `px-4 py-5 sm:px-6 sm:py-8 lg:px-8` — too tight for mobile.
+3. **Inline `style` Padding on Sections**: Some sections (e.g. `HinglishSection`) used `style={{ padding: '80px 0' }}` which didn't adapt to mobile at all.
+
+### Resolution Steps
+1. **Global Spacing Utilities (`client/src/index.css`)**:
+   - Added `.page-content` class: `36px 20px` padding on mobile → `48px 32px` on tablet → `56px 40px` on desktop.
+   - Added `.section-gap` class: `48px` vertical padding on mobile → `64px` on tablet → `80px` on desktop.
+2. **All Page Wrappers Updated**:
+   - Replaced `flex-1 w-full max-w-[1240px] mx-auto px-4 py-5 sm:px-6 sm:py-8 lg:px-8 pb-16` with `.page-content` in `About.jsx`, `CourseDetail.jsx`, `MyCourses.jsx`, `LessonViewer.jsx`.
+3. **Home Page Sections**:
+   - All sections (`HeroSection`, `HowItWorks`, `WhatYouGet`, `HinglishSection`, `QuoteSection`) switched to `.section-gap` with `px-5 sm:px-8 lg:px-12` side padding.
+
+---
+
+## Incident #007: Sticky Navbar Broken by `overflow-x: hidden` on `html` Element
+
+### Metadata
+- **Date**: August 14, 2026
+- **Component**: Global CSS (`client/src/index.css`), Navbar (`client/src/components/Navbar.jsx`)
+- **Status**: ✅ Resolved
+
+### Error Symptoms
+The navbar (`position: sticky; top: 0`) stopped sticking to the top of the viewport on scroll. Users could scroll past the navbar, causing it to disappear off-screen.
+
+### Root Cause
+`overflow-x: hidden` was applied to the `html` element in `index.css`. This is a known browser behaviour: when any `overflow` property (including `overflow-x`) is set on the `<html>` element, the browser designates `<html>` as the scroll container instead of the viewport. `position: sticky` computes its scroll boundary relative to its nearest scrolling ancestor — which became `<html>` rather than the viewport — silently breaking stickiness.
+
+### Resolution Steps
+1. **Removed `overflow-x: hidden` and `max-width: 100vw` from `html` element** in `index.css`.
+   - `overflow-x: hidden` was retained only on `body`, which does not exhibit this sticky-breaking behaviour.
+   - Added a comment explaining why `overflow` must never be set on `html`.
+2. **Logo Size & Header Proportions Balanced (`Navbar.jsx`)**:
+   - Adjusted logo sizing to `h-18 sm:h-22 md:h-26` with compact padding `py-0.5 sm:py-1` so the brand icon/logo is prominent, large, and crisp.
+
+---
+
+## Incident #008: Post-Login Redirect Returns to Home Instead of Intended Page
+
+### Metadata
+- **Date**: August 14, 2026
+- **Component**: Auth0 Provider (`client/src/main.jsx`), App Shell (`client/src/App.jsx`), Navbar (`client/src/components/Navbar.jsx`), Auth Constants (`client/src/utils/authConstants.js`)
+- **Status**: ✅ Resolved
+
+### Error Symptoms
+When an unauthenticated user clicked **"Courses"** or **"Start Learning →"**, they were redirected to Auth0 for login. After a successful login, Auth0 redirected them back to the app's root (`/`) instead of the originally intended `/my-courses` page.
+
+### Root Cause
+1. **Missing `onRedirectCallback`**: The `Auth0Provider` in `main.jsx` had no `onRedirectCallback` prop. Without it, Auth0 ignores the `appState` object (which contains `returnTo: '/my-courses'`) after login and simply lands on the `redirect_uri` root URL.
+2. **Provider Hierarchy Constraint**: `onRedirectCallback` requires `useNavigate()` from React Router. However, `Auth0Provider` wrapped `BrowserRouter` in the original structure.
+3. **Circular Import Trap**: Exporting constants from `App.jsx` to `Navbar.jsx` while `App.jsx` imported `Navbar.jsx` created a circular dependency where `REDIRECT_KEY` resolved as `undefined`, causing initialization failures.
+
+### Resolution Steps
+1. **Decoupled Auth Constants (`client/src/utils/authConstants.js`)**:
+   - Created standalone `authConstants.js` exporting `REDIRECT_KEY = 'auth_redirect_to'` to eliminate circular dependencies.
+2. **`sessionStorage`-based Redirect (`client/src/App.jsx`, `client/src/components/Navbar.jsx`)**:
+   - In `Navbar.jsx`, before calling `loginWithRedirect()`, the intended destination (`/my-courses`) is saved: `sessionStorage.setItem(REDIRECT_KEY, '/my-courses')`.
+   - In `App.jsx`, a `useEffect` watches `isAuthenticated` and `isLoading`. When authentication resolves, it checks `sessionStorage` for a stored destination, navigates there with `replace: true`, and clears the key.
+3. **Maintained Safe Structure**: Kept `Auth0Provider` wrapping `BrowserRouter` in `main.jsx` for clean Auth0 URL parsing.
+

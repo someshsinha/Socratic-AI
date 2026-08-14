@@ -325,21 +325,21 @@ function HeroSection({ onGenerate, loading }) {
       <div className="w-full max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left: 5 cols */}
-          <div className="lg:col-span-5 space-y-5 sm:space-y-6 min-w-0">
+          <div className="lg:col-span-5 space-y-6 sm:space-y-7 min-w-0">
             {/* Eyebrow */}
             <p style={{
               fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-              fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.08em',
-              textTransform: 'uppercase', color: T.green, margin: 0,
+              fontSize: '0.70rem', fontWeight: 700, letterSpacing: '0.1em',
+              textTransform: 'uppercase', color: T.green, margin: '0 0 14px 0',
             }}>
               Socratic-AI v0.1 // Curriculum Engine
             </p>
 
             {/* H1 — Proportional, clean typography */}
             <h1 style={{
-              fontSize: 'clamp(1.5rem, 4vw, 2.75rem)',
-              fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.15,
-              color: T.ink, margin: 0,
+              fontSize: 'clamp(1.75rem, 4.2vw, 2.9rem)',
+              fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.16,
+              color: T.ink, margin: '0 0 16px 0',
               wordBreak: 'break-word',
             }}>
               Question Everything.<br />
@@ -347,7 +347,7 @@ function HeroSection({ onGenerate, loading }) {
             </h1>
 
             {/* Lede */}
-            <p style={{ fontSize: '0.84rem', color: '#4b5563', lineHeight: 1.6, margin: 0, maxWidth: 400 }}>
+            <p style={{ fontSize: '0.88rem', color: '#4b5563', lineHeight: 1.65, margin: '0 0 8px 0', maxWidth: 420 }}>
               Generate rigorous, structured academic courses and interactive study notes.
               First-principles reasoning. Native LaTeX. Zero fluff.
             </p>

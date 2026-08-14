@@ -1059,7 +1059,7 @@ export default function MyCourses() {
                   disabled={isGenerating}
                   value={newTopic}
                   onChange={e => setNewTopic(e.target.value)}
-                  placeholder="e.g. Kashmiri Hindus: A Lost Minority, Quantum Computing..."
+                  placeholder="e.g. Distributed Systems, Quantum Computing, Compiler Design..."
                   style={{ border: `1px solid ${T.ink}` }}
                   className="w-full px-4 py-3 bg-white text-sm text-gray-900 placeholder-gray-400 outline-none focus:ring-1 focus:ring-black disabled:opacity-60"
                 />

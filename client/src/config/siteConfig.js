@@ -13,7 +13,7 @@ export const siteConfig = {
     bio: 'I built Socratic AI around a simple problem. Discovering something worth learning is easy, but figuring out how to learn it properly can be much harder. When you start exploring a complex or unfamiliar subject, it is often difficult to find something that gives you enough depth without immediately overwhelming you. Socratic AI is my attempt to make that process easier.',
     avatar: 'https://github.com/someshsinha.png', // Automatically fetches GitHub profile picture
     githubUrl: 'https://github.com/someshsinha',
-    linkedinUrl: 'https://www.linkedin.com/in/somesh-sinha-84883424a/',
+    linkedinUrl: 'https://www.linkedin.com/in/somesh-sinha-a8614b284/',
     email: 'someshsinha902@gmail.com',
     mailtoUrl: 'mailto:someshsinha902@gmail.com',
   },
