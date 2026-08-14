@@ -73,6 +73,12 @@ export default function LessonViewer() {
     return () => { isMounted = false; };
   }, [id]);
 
+  useEffect(() => {
+    if (lesson?.title) {
+      document.title = `${lesson.title} • Socratic AI`;
+    }
+  }, [lesson]);
+
   // 2. Build Table of Contents items from rendered DOM anchors
   useEffect(() => {
     if (!lesson) return;
@@ -540,7 +546,7 @@ export default function LessonViewer() {
       >
         <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
           <p style={{ fontSize: '0.82rem', margin: 0, fontFamily: 'ui-monospace,monospace' }}>
-            A portfolio project by{' '}
+            A project by{' '}
             <a href={siteConfig.creator.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: T.ink, fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
               {siteConfig.creator.handle}
             </a>

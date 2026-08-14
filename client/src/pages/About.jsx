@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import siteConfig from '../config/siteConfig';
 
@@ -18,6 +18,10 @@ const T = {
 
 export default function About() {
   const { creator, links, app } = siteConfig;
+
+  useEffect(() => {
+    document.title = 'About • Socratic AI';
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col justify-between" style={{ background: 'transparent', color: T.ink }}>
@@ -148,7 +152,7 @@ export default function About() {
                 className="w-full pb-3 mb-4 flex items-center justify-between border-b border-[#d8d3c7]"
               >
                 <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.70rem', fontWeight: 700, color: T.green }}>
-                  [SOCRATES_V1 // PHILOSOPHY]
+                  [SOCRATES // PHILOSOPHY]
                 </span>
                 <span className="flex items-center gap-1.5 font-mono text-[10px] text-gray-500 font-semibold tracking-wider">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -819,7 +823,7 @@ export default function About() {
       >
         <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
           <p style={{ fontSize: '0.82rem', margin: 0, fontFamily: 'ui-monospace,monospace' }}>
-            A portfolio project by{' '}
+            A project by{' '}
             <a href={creator.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: T.ink, fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
               {creator.handle}
             </a>

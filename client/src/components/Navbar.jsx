@@ -86,7 +86,7 @@ export default function Navbar() {
   return (
     <nav
       className="sticky top-0 z-50 w-full border-b print:hidden"
-      style={{ background: 'rgba(251,250,246,0.95)', backdropFilter: 'blur(14px)', borderColor: '#d8d3c7' }}
+      style={{ background: '#fbfaf6', borderColor: '#d8d3c7' }}
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-6 py-0.5 sm:py-1">
         {/* Logo */}
@@ -258,7 +258,7 @@ export default function Navbar() {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 top-[52px] sm:top-[60px] bg-black/20 z-40 md:hidden backdrop-blur-xs"
+            className="fixed inset-0 bg-black/35 z-40 md:hidden backdrop-blur-xs"
             onClick={() => setMobileMenuOpen(false)}
           />
 

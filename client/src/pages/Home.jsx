@@ -985,7 +985,7 @@ function Footer() {
     >
       <div className="w-full max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-center text-center sm:text-left">
         <p style={{ fontSize: '0.80rem', margin: 0, fontFamily: 'ui-monospace,monospace' }}>
-          A portfolio project by{' '}
+          A project by{' '}
           <a href={siteConfig.creator.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: T.ink, fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
             {siteConfig.creator.handle}
           </a>
@@ -1032,6 +1032,10 @@ export default function Home() {
   const navigate = useNavigate();
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState(null);
+
+  useEffect(() => {
+    document.title = 'Socratic AI';
+  }, []);
 
   const handleGenerate = async (topic) => {
     setGenerating(true);

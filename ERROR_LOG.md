@@ -228,3 +228,44 @@ When an unauthenticated user clicked **"Courses"** or **"Start Learning →"**, 
    - In `App.jsx`, a `useEffect` watches `isAuthenticated` and `isLoading`. When authentication resolves, it checks `sessionStorage` for a stored destination, navigates there with `replace: true`, and clears the key.
 3. **Maintained Safe Structure**: Kept `Auth0Provider` wrapping `BrowserRouter` in `main.jsx` for clean Auth0 URL parsing.
 
+---
+
+## Incident #009: Dark Gap Stripe Between Header and Mobile Navigation Drawer
+
+### Metadata
+- **Date**: August 15, 2026
+- **Component**: Navbar (`client/src/components/Navbar.jsx`)
+- **Status**: ✅ Resolved
+
+### Error Symptoms
+When opening the mobile drawer menu on small screens, a dark horizontal stripe appeared between the navbar bottom border and the dropdown drawer.
+
+### Root Cause
+1. **Backdrop Bleed Through**: The backdrop element used `top-[52px]` which did not align with the updated navbar height. When the navbar had semi-transparent background (`rgba(251,250,246,0.95)`), the dark backdrop overlay showed through the navbar and gap.
+
+### Resolution Steps
+1. **Solid Navbar Surface**: Set `background: '#fbfaf6'` on `<nav>` to eliminate transparency bleed.
+2. **Seamless Full Backdrop**: Positioned backdrop at `fixed inset-0 bg-black/35 z-40` behind the `z-50` navbar and drawer, ensuring the drawer attaches flush below the navbar with zero visual artifacts.
+
+---
+
+## Incident #010: Code Block Mobile Responsiveness & Overflow Clipping
+
+### Metadata
+- **Date**: August 15, 2026
+- **Component**: Code Renderer (`client/src/components/blocks/CodeBlock.jsx`), Styles (`client/src/index.css`)
+- **Status**: ✅ Resolved
+
+### Error Symptoms
+On mobile screens, code blocks displayed clipped lines on long comments/statements, had inflexible font sizes, and lacked smooth touch scrolling.
+
+### Root Cause
+1. Fixed font sizing (`0.84rem`) and wide line-number gutters (`2.5em`) consumed disproportionate horizontal width on small screens.
+2. Long code lines overflowed without line wrap options or custom touch-optimized scrollbars.
+
+### Resolution Steps
+1. **Responsive Typography**: Set font size to `clamp(0.70rem, 2.7vw, 0.82rem)` with compact `1.8em` line-number gutters on mobile.
+2. **Interactive Wrap Toggle**: Added a `[ WRAP ]` / `[ NO WRAP ]` switch in the code header bar, enabling users to toggle between line wrapping and horizontal scrolling.
+3. **Smooth Touch Scrolling**: Enabled `-webkit-overflow-scrolling: touch` and added dark custom scrollbar styles in `index.css`.
+
+

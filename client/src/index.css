@@ -62,6 +62,21 @@ body::before {
   animation: soft-pulse 2.2s infinite ease-in-out;
 }
 
+/* ── Code Block Scrollbars ── */
+pre::-webkit-scrollbar {
+  height: 5px;
+}
+pre::-webkit-scrollbar-track {
+  background: #111827;
+}
+pre::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 3px;
+}
+pre::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
 /* ── Global page-content wrapper: generous breathing room on all screen sizes ── */
 .page-content {
   width: 100%;
