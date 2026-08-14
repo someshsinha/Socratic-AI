@@ -58,9 +58,214 @@ body::before {
 }
 
 @media print {
-  /* 1. Balanced page budget and margins to prevent trailing overflow pages */
+  /* ── Page Setup ── */
   @page {
-    margin: 12mm 15mm 12mm 15mm;
+    margin: 18mm 20mm 18mm 20mm;
     size: A4;
+  }
+
+  @page :first {
+    margin-top: 22mm;
+  }
+
+  /* ── Hide ALL UI Chrome ── */
+  /* Navbar is already print:hidden via Tailwind class, 
+     but belt-and-suspenders for any global nav */
+  nav.print\:hidden,
+  footer.print\:hidden,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Hide the background texture/grid overlay */
+  body::before {
+    display: none !important;
+  }
+
+  /* Reset body background to plain white for print */
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+  }
+
+  /* ── Layout: Main column goes full width ── */
+  /* Remove grid and let main reading column fill the page */
+  .grid {
+    display: block !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Hide sticky sidebar TOC column */
+  aside {
+    display: none !important;
+  }
+
+  /* Remove container padding/max-width constraints */
+  div[style*="maxWidth: 1240"] {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* ── Typography for Print ── */
+  h1 {
+    font-size: 22pt !important;
+    line-height: 1.2 !important;
+    page-break-after: avoid;
+    margin-bottom: 8pt !important;
+  }
+
+  h2, h3 {
+    font-size: 15pt !important;
+    line-height: 1.3 !important;
+    page-break-after: avoid;
+    margin-top: 18pt !important;
+    margin-bottom: 6pt !important;
+  }
+
+  h4, h5, h6 {
+    font-size: 12pt !important;
+    page-break-after: avoid;
+  }
+
+  p {
+    orphans: 3;
+    widows: 3;
+    font-size: 10.5pt !important;
+    line-height: 1.65 !important;
+  }
+
+  /* ── Prevent page breaks inside important blocks ── */
+  /* Definitions, theorems, proofs, callouts, key takeaways */
+  div[class*="border-l-4"],
+  div[class*="shadow-xs"] {
+    page-break-inside: avoid;
+    border-color: #111827 !important;
+  }
+
+  /* Learning objectives box */
+  div[id="section-objectives"] {
+    page-break-inside: avoid;
+    background: #f9f9f6 !important;
+    border: 1pt solid #cccccc !important;
+  }
+
+  /* ── Code Blocks ── */
+  pre, code {
+    font-size: 9pt !important;
+    line-height: 1.5 !important;
+    page-break-inside: avoid;
+  }
+
+  pre {
+    background: #f5f5f0 !important;
+    border: 1pt solid #cccccc !important;
+    padding: 10pt !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    color: #1f2937 !important;
+  }
+
+  /* ── MCQ / Knowledge Check blocks ── */
+  /* Keep them together on one page */
+  div[id^="section-mcq"] {
+    page-break-inside: avoid;
+  }
+
+  /* ── Video blocks: show as text reference, not empty iframe ── */
+  div[id^="section-video"] iframe {
+    display: none !important;
+  }
+
+  div[id^="section-video"] {
+    page-break-inside: avoid;
+  }
+
+  /* ── Lists ── */
+  ul, ol {
+    page-break-inside: avoid;
+    font-size: 10.5pt !important;
+  }
+
+  li {
+    line-height: 1.6 !important;
+  }
+
+  /* ── KaTeX / Math equations ── */
+  .katex {
+    font-size: 11pt !important;
+  }
+
+  .katex-display {
+    page-break-inside: avoid;
+    margin: 12pt 0 !important;
+  }
+
+  /* ── Links: show URL after text for print ── */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 8pt;
+    color: #666666;
+    font-style: italic;
+  }
+
+  /* But not for internal navigation links */
+  a[href^="/"]::after,
+  a[href^="#"]::after {
+    content: none;
+  }
+
+  /* ── Borders & Decorative Elements ── */
+  /* Simplify borders for print clarity */
+  .border,
+  [class*="border-"] {
+    border-color: #d0d0d0 !important;
+  }
+
+  /* Remove all shadows */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Remove hover animations and transforms */
+  .card-hover-lift,
+  .card-hover-lift:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ── Monospace labels (eyebrows) ── */
+  /* Keep them but ensure they print cleanly */
+  [style*="ui-monospace"] {
+    font-size: 8pt !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  /* ── Images: ensure they don't overflow page ── */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* ── Remove animations ── */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* ── Print-specific branded header on first page ── */
+  /* This ensures a clean top for the lesson title area */
+  .border-b.border-\[\#d8d3c7\] {
+    border-bottom: 1.5pt solid #111827 !important;
+    padding-bottom: 12pt !important;
+    margin-bottom: 16pt !important;
   }
 }

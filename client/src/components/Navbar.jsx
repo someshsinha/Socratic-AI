@@ -81,7 +81,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="sticky top-0 z-50 w-full border-b"
+      className="sticky top-0 z-50 w-full border-b print:hidden"
       style={{ background: 'rgba(251,250,246,0.94)', backdropFilter: 'blur(14px)', borderColor: '#d8d3c7' }}
     >
       <div className="max-w-[1240px] mx-auto px-6 flex items-center justify-between gap-6 py-2">

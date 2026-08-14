@@ -74,6 +74,14 @@ export default function LessonViewer() {
   useEffect(() => {
     if (!lesson) return;
 
+    // Reset TOC when lesson changes so stale items don't linger
+    setTocItems([]);
+    setActiveSectionId('');
+
+    let retryCount = 0;
+    const maxRetries = 10;
+    let timerId = null;
+
     const buildToc = () => {
       const items = [];
       const sectionElements = document.querySelectorAll('[data-section-target]');
@@ -90,12 +98,19 @@ export default function LessonViewer() {
       if (items.length > 0) {
         setTocItems(items);
         setActiveSectionId(items[0].id);
+      } else if (retryCount < maxRetries) {
+        // DOM not ready yet — retry after a short delay
+        retryCount++;
+        timerId = setTimeout(buildToc, 250);
       }
     };
 
-    // Small timeout to allow DOM to populate after LessonRenderer mounts
-    const timeout = setTimeout(buildToc, 100);
-    return () => clearTimeout(timeout);
+    // Initial attempt after a short delay to allow LessonRenderer to mount
+    timerId = setTimeout(buildToc, 200);
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+    };
   }, [lesson]);
 
   // 3. Viewport IntersectionObserver to detect currently visible section
@@ -511,7 +526,7 @@ export default function LessonViewer() {
       </div>
 
       {/* ── Footer ── */}
-      <footer style={{ borderTop: `1px solid ${T.line}`, color: T.muted, padding: '22px 0 32px', background: T.paper }}>
+      <footer className="print:hidden" style={{ borderTop: `1px solid ${T.line}`, color: T.muted, padding: '22px 0 32px', background: T.paper }}>
         <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
           <p style={{ fontSize: '0.85rem', margin: 0 }}>
             A portfolio project by{' '}
