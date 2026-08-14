@@ -234,46 +234,42 @@ export default function LessonViewer() {
 
   return (
     <div className="flex-1 flex flex-col justify-between" style={{ background: 'transparent', color: T.ink }}>
-      <div className="flex-1" style={{ maxWidth: 1240, width: '100%', margin: '0 auto', padding: '36px 24px 72px' }}>
+      <div className="page-content">
         
         {/* Navigation & Header Toolbar */}
-        <div className="mb-6 flex items-center justify-between gap-4 print:hidden">
+        <div className="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 print:hidden">
           <Link
             to={courseId ? `/course/${courseId}` : '/my-courses'}
             style={{
               fontFamily: 'ui-monospace,monospace',
-              fontSize: '0.76rem',
+              fontSize: '0.74rem',
               fontWeight: 700,
               color: T.muted,
               textDecoration: 'none',
-              letterSpacing: '0.06em',
+              letterSpacing: '0.04em',
             }}
-            className="hover:text-gray-950 flex items-center gap-1.5"
+            className="hover:text-gray-950 flex items-center gap-1.5 py-1"
           >
             ← [BACK TO COURSE OUTLINE]
           </Link>
 
-          {/* Compact Actions */}
-          <div className="flex items-center gap-3">
-            <NarrateButton lessonId={lesson._id} autoPlay={shouldAutoPlayNarration} />
+          {/* Actions Toolbar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+            <div className="w-full sm:w-auto">
+              <NarrateButton lessonId={lesson._id} autoPlay={shouldAutoPlayNarration} />
+            </div>
             <button
               onClick={handleDownloadPdf}
               style={{
                 fontFamily: 'ui-monospace,monospace',
-                fontSize: '0.76rem',
-                fontWeight: 700,
                 border: `1px solid ${T.line}`,
                 background: T.panel,
                 color: T.ink,
-                padding: '7px 12px',
                 cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
               }}
-              className="hover:border-gray-900 transition-colors"
+              className="w-full sm:w-auto px-3 py-2 text-[11px] sm:text-xs font-bold tracking-tight whitespace-nowrap flex items-center justify-center gap-1.5 hover:border-gray-900 transition-colors shadow-xs"
             >
-              <svg className="w-3.5 h-3.5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 text-gray-700 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <span>[ PRINT / PDF ]</span>
@@ -282,22 +278,22 @@ export default function LessonViewer() {
         </div>
 
         {/* ── 2-Column Responsive Reading Layout ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
           
           {/* ════════ MAIN READING COLUMN (Hero Educational Canvas) ════════ */}
-          <main className="lg:col-span-8 space-y-8 min-w-0">
+          <main className="lg:col-span-8 space-y-6 sm:space-y-8 min-w-0">
             
             {/* Lesson Header Title */}
-            <div className="border-b border-[#d8d3c7] pb-6">
+            <div className="border-b border-[#d8d3c7] pb-5 sm:pb-6">
               <p
                 style={{
                   fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-                  fontSize: '0.75rem',
+                  fontSize: '0.72rem',
                   fontWeight: 700,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   color: T.green,
-                  margin: '0 0 14px',
+                  margin: '0 0 10px',
                 }}
               >
                 [LESSON // STUDY_NOTES]
@@ -305,12 +301,14 @@ export default function LessonViewer() {
 
               <h1
                 style={{
-                  fontSize: 'clamp(2.2rem, 4.2vw, 3.1rem)',
+                  fontSize: 'clamp(1.65rem, 5vw, 3rem)',
                   fontWeight: 900,
                   letterSpacing: '-0.02em',
-                  lineHeight: 1.12,
+                  lineHeight: 1.15,
                   color: T.ink,
-                  margin: '0 0 14px',
+                  margin: '0 0 12px',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
                 }}
               >
                 {lesson.title.endsWith('.') ? lesson.title : `${lesson.title}.`}
@@ -318,7 +316,7 @@ export default function LessonViewer() {
 
               {/* Sub-header meta */}
               {course?.title && (
-                <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.76rem', color: T.muted, margin: 0 }}>
+                <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.74rem', color: T.muted, margin: 0, lineHeight: 1.4 }}>
                   Course: {course.title} <span className="mx-1">•</span> Module {String(currentModNum).padStart(2, '0')}
                 </p>
               )}
@@ -330,13 +328,13 @@ export default function LessonViewer() {
                 id="section-objectives"
                 data-section-target
                 data-section-title="Learning Objectives"
-                className="p-5 border border-[#d8d3c7] bg-white space-y-2.5 scroll-mt-24"
+                className="p-4 sm:p-5 border border-[#d8d3c7] bg-white space-y-2.5 scroll-mt-24"
                 style={{ boxShadow: '0 4px 16px rgba(17,24,39,0.02)' }}
               >
                 <span
                   style={{
                     fontFamily: 'ui-monospace,monospace',
-                    fontSize: '0.72rem',
+                    fontSize: '0.70rem',
                     fontWeight: 700,
                     color: T.green,
                     letterSpacing: '0.06em',
@@ -346,10 +344,10 @@ export default function LessonViewer() {
                 >
                   [LEARNING OBJECTIVES]
                 </span>
-                <p style={{ fontSize: '0.86rem', color: '#4b5563', margin: '0 0 6px', fontWeight: 600 }}>
+                <p style={{ fontSize: '0.84rem', color: '#4b5563', margin: '0 0 6px', fontWeight: 600 }}>
                   By the end of this lesson, you should be able to:
                 </p>
-                <ul className="list-disc list-inside space-y-1.5 text-sm text-[#1f2937] m-0 pl-1">
+                <ul className="list-disc list-inside space-y-1.5 text-xs sm:text-sm text-[#1f2937] m-0 pl-1">
                   {lesson.objectives.map((obj, i) => (
                     <li key={i} className="leading-relaxed">{obj}</li>
                   ))}
@@ -364,10 +362,10 @@ export default function LessonViewer() {
 
             {/* ── Lesson Navigation Bar (Previous / Sequence / Next) ── */}
             <nav
-              className="mt-14 pt-8 border-t border-[#d8d3c7] flex flex-col sm:flex-row items-center justify-between gap-6 print:hidden"
+              className="mt-10 pt-6 sm:mt-14 sm:pt-8 border-t border-[#d8d3c7] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 print:hidden"
             >
               {/* Previous Lesson Link */}
-              <div className="w-full sm:w-auto text-left">
+              <div className="w-full sm:w-auto text-left order-2 sm:order-1">
                 {prevLesson ? (
                   <button
                     onClick={() => navigate(`/lesson/${prevLesson._id}`)}
@@ -381,19 +379,19 @@ export default function LessonViewer() {
                       padding: '10px 16px',
                       cursor: 'pointer',
                     }}
-                    className="hover:border-gray-950 transition-colors w-full sm:w-auto text-left flex items-center gap-2"
+                    className="hover:border-gray-950 transition-colors w-full sm:w-auto text-center sm:text-left flex items-center justify-center sm:justify-start gap-2"
                   >
                     <span>←</span>
                     <span>PREVIOUS LESSON</span>
                   </button>
                 ) : (
-                  <div style={{ height: 40 }} />
+                  <div className="hidden sm:block" style={{ height: 40 }} />
                 )}
               </div>
 
               {/* Progress Dots Indicator */}
-              <div className="text-center space-y-1.5">
-                <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.72rem', fontWeight: 700, color: T.muted, margin: 0 }}>
+              <div className="text-center space-y-1.5 order-1 sm:order-2 py-1">
+                <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.70rem', fontWeight: 700, color: T.muted, margin: 0 }}>
                   MODULE {String(currentModNum).padStart(2, '0')} · LESSON {String(currentLessonIndex + 1).padStart(2, '0')} OF {String(totalLessonsInMod).padStart(2, '0')}
                 </p>
                 {/* Dots sequence */}
@@ -416,7 +414,7 @@ export default function LessonViewer() {
               </div>
 
               {/* Next Lesson Link */}
-              <div className="w-full sm:w-auto text-right">
+              <div className="w-full sm:w-auto text-right order-3">
                 {nextLesson ? (
                   <button
                     onClick={() => navigate(`/lesson/${nextLesson._id}`)}
@@ -430,7 +428,7 @@ export default function LessonViewer() {
                       padding: '10px 18px',
                       cursor: 'pointer',
                     }}
-                    className="hover:-translate-y-px active:translate-y-0 transition-transform w-full sm:w-auto text-right flex items-center justify-end gap-2 shadow-sm"
+                    className="hover:-translate-y-px active:translate-y-0 transition-transform w-full sm:w-auto text-center sm:text-right flex items-center justify-center sm:justify-end gap-2 shadow-sm"
                   >
                     <span>NEXT LESSON</span>
                     <span>→</span>
@@ -448,7 +446,7 @@ export default function LessonViewer() {
                       padding: '10px 18px',
                       cursor: 'pointer',
                     }}
-                    className="hover:-translate-y-px active:translate-y-0 transition-transform w-full sm:w-auto text-right flex items-center justify-end gap-2"
+                    className="hover:-translate-y-px active:translate-y-0 transition-transform w-full sm:w-auto text-center sm:text-right flex items-center justify-center sm:justify-end gap-2"
                   >
                     <span>COURSE COMPLETED ✓</span>
                   </button>

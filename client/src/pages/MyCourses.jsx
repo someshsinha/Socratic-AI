@@ -349,21 +349,21 @@ export default function MyCourses() {
 
   return (
     <div className="flex-1 flex flex-col justify-between" style={{ background: 'transparent', color: T.ink }}>
-      <div className="flex-1" style={{ maxWidth: 1240, width: '100%', margin: '0 auto', padding: '36px 24px 56px' }}>
+      <div className="page-content">
         
         {/* ── Page Header Row ── */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8 sm:mb-10">
           <div>
             {/* Eyebrow */}
             <p
               style={{
                 fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-                fontSize: '0.75rem',
+                fontSize: '0.72rem',
                 fontWeight: 700,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 color: T.green,
-                margin: '0 0 10px',
+                margin: '0 0 8px',
               }}
             >
               Socratic-AI v0.1 // My Library
@@ -372,12 +372,14 @@ export default function MyCourses() {
             {/* Main H1 */}
             <h1
               style={{
-                fontSize: 'clamp(2.4rem, 4.5vw, 3.6rem)',
+                fontSize: 'clamp(1.85rem, 4.5vw, 3.6rem)',
                 fontWeight: 900,
                 letterSpacing: '-0.02em',
-                lineHeight: 1.06,
+                lineHeight: 1.08,
                 color: T.ink,
                 margin: '0 0 8px',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
               }}
             >
               My Course Library.

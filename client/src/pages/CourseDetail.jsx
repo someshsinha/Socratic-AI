@@ -159,28 +159,28 @@ export default function CourseDetail() {
 
   return (
     <div className="flex-1 flex flex-col justify-between" style={{ background: 'transparent', color: T.ink }}>
-      <div className="flex-1" style={{ maxWidth: 1240, width: '100%', margin: '0 auto', padding: '40px 24px 72px' }}>
+      <div className="page-content">
         
         {/* Breadcrumb Back Link */}
-        <div className="mb-6">
+        <div className="mb-5 sm:mb-6">
           <Link
             to="/my-courses"
             style={{
               fontFamily: 'ui-monospace,monospace',
-              fontSize: '0.76rem',
+              fontSize: '0.74rem',
               fontWeight: 700,
               color: T.muted,
               textDecoration: 'none',
-              letterSpacing: '0.06em',
+              letterSpacing: '0.04em',
             }}
-            className="hover:text-gray-950 flex items-center gap-1.5"
+            className="hover:text-gray-950 flex items-center gap-1.5 py-1"
           >
             ← [BACK TO LIBRARY]
           </Link>
         </div>
 
         {/* ── 2-Column Responsive Grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
           
           {/* ════════ LEFT COLUMN (Course Overview & Clear Actions) ════════ */}
           <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
@@ -189,7 +189,7 @@ export default function CourseDetail() {
               <p
                 style={{
                   fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-                  fontSize: '0.75rem',
+                  fontSize: '0.72rem',
                   fontWeight: 700,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
@@ -203,12 +203,14 @@ export default function CourseDetail() {
               {/* 2. Course Title */}
               <h1
                 style={{
-                  fontSize: 'clamp(2.3rem, 4.5vw, 3.4rem)',
+                  fontSize: 'clamp(1.45rem, 4.5vw, 2.8rem)',
                   fontWeight: 900,
                   letterSpacing: '-0.02em',
-                  lineHeight: 1.08,
+                  lineHeight: 1.15,
                   color: T.ink,
-                  margin: '0 0 14px',
+                  margin: '0 0 10px',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
                 }}
               >
                 {course.title.endsWith('.') ? course.title : `${course.title}.`}
@@ -217,23 +219,23 @@ export default function CourseDetail() {
               {/* 3. Real Course Description */}
               <p
                 style={{
-                  fontSize: '0.94rem',
+                  fontSize: '0.84rem',
                   color: '#4b5563',
-                  lineHeight: 1.65,
-                  margin: '0 0 20px',
+                  lineHeight: 1.55,
+                  margin: '0 0 16px',
                 }}
               >
                 {course.description || `A complete structured academic curriculum covering the principles, core topics, and analysis of ${course.title}.`}
               </p>
 
               {/* 4. Metadata Chips (Pure scope metrics, no time estimations) */}
-              <div className="flex flex-wrap items-center gap-2 mb-7">
+              <div className="flex flex-wrap items-center gap-1.5 mb-5">
                 <span
                   style={{
                     fontFamily: 'ui-monospace,monospace',
-                    fontSize: '0.72rem',
+                    fontSize: '0.68rem',
                     fontWeight: 700,
-                    padding: '4px 10px',
+                    padding: '3px 8px',
                     border: `1px solid ${T.line}`,
                     background: T.panel,
                     color: T.ink,
@@ -244,9 +246,9 @@ export default function CourseDetail() {
                 <span
                   style={{
                     fontFamily: 'ui-monospace,monospace',
-                    fontSize: '0.72rem',
+                    fontSize: '0.68rem',
                     fontWeight: 700,
-                    padding: '4px 10px',
+                    padding: '3px 8px',
                     border: `1px solid ${T.line}`,
                     background: T.panel,
                     color: T.ink,
@@ -257,7 +259,7 @@ export default function CourseDetail() {
               </div>
 
               {/* 5. Course Actions Stack */}
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {/* PRIMARY CTA: START / CONTINUE COURSE */}
                 <button
                   onClick={() => {
@@ -267,11 +269,11 @@ export default function CourseDetail() {
                   }}
                   style={{
                     width: '100%',
-                    padding: '13px 20px',
+                    padding: '10px 14px',
                     border: `1px solid ${T.ink}`,
                     background: T.ink,
                     color: '#ffffff',
-                    fontSize: '0.85rem',
+                    fontSize: 'clamp(0.72rem, 2.5vw, 0.82rem)',
                     fontWeight: 800,
                     cursor: 'pointer',
                     fontFamily: 'ui-monospace,monospace',
@@ -279,7 +281,7 @@ export default function CourseDetail() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 8,
+                    gap: 6,
                   }}
                   className="hover:-translate-y-px active:translate-y-0 transition-transform shadow-sm"
                 >
@@ -295,24 +297,24 @@ export default function CourseDetail() {
                   }}
                   style={{
                     width: '100%',
-                    padding: '12px 18px',
+                    padding: '10px 14px',
                     border: `1px solid ${T.ink}`,
                     background: '#ffffff',
                     color: T.ink,
-                    fontSize: '0.82rem',
+                    fontSize: 'clamp(0.70rem, 2.4vw, 0.78rem)',
                     fontWeight: 750,
                     cursor: 'pointer',
                     fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-                    letterSpacing: '0.04em',
+                    letterSpacing: '0.03em',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 8,
+                    gap: 6,
                   }}
                   className="hover:-translate-y-px active:translate-y-0 hover:bg-[#fbfaf6] hover:border-black transition-all shadow-xs group"
                 >
                   <svg
-                    className="w-4 h-4 text-indigo-600 group-hover:scale-110 transition-transform shrink-0"
+                    className="w-3.5 h-3.5 text-indigo-600 group-hover:scale-110 transition-transform shrink-0"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -339,14 +341,14 @@ export default function CourseDetail() {
             >
               {/* Header Bar with subtle [CURRICULUM // MODULES] & Expand/Collapse */}
               <div
-                className="px-5 py-3.5 flex items-center justify-between"
+                className="px-4 py-3 sm:px-5 sm:py-3.5 flex flex-wrap items-center justify-between gap-2.5"
                 style={{
                   borderBottom: `1px solid ${T.line}`,
                   background: T.paper,
                 }}
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-1.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="hidden sm:flex gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#e05244' }} />
                     <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#f0a842' }} />
                     <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#2ea843' }} />
@@ -354,7 +356,7 @@ export default function CourseDetail() {
                   <span
                     style={{
                       fontFamily: 'ui-monospace,monospace',
-                      fontSize: '0.74rem',
+                      fontSize: '0.72rem',
                       fontWeight: 700,
                       color: T.green,
                       letterSpacing: '0.04em',
@@ -365,12 +367,12 @@ export default function CourseDetail() {
                 </div>
 
                 {/* Subtle Expand All / Collapse All with Icons */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5 sm:gap-3">
                   <button
                     onClick={handleExpandAll}
                     style={{
                       fontFamily: 'ui-monospace,monospace',
-                      fontSize: '0.72rem',
+                      fontSize: '0.70rem',
                       fontWeight: 700,
                       color: T.muted,
                       background: 'none',
@@ -380,19 +382,19 @@ export default function CourseDetail() {
                       alignItems: 'center',
                       gap: 4,
                     }}
-                    className="hover:text-gray-950"
+                    className="hover:text-gray-950 py-1"
                   >
                     <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                     </svg>
-                    Expand All
+                    <span>Expand All</span>
                   </button>
                   <span style={{ color: T.line }}>|</span>
                   <button
                     onClick={handleCollapseAll}
                     style={{
                       fontFamily: 'ui-monospace,monospace',
-                      fontSize: '0.72rem',
+                      fontSize: '0.70rem',
                       fontWeight: 700,
                       color: T.muted,
                       background: 'none',
@@ -402,12 +404,12 @@ export default function CourseDetail() {
                       alignItems: 'center',
                       gap: 4,
                     }}
-                    className="hover:text-gray-950"
+                    className="hover:text-gray-950 py-1"
                   >
                     <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
                     </svg>
-                    Collapse All
+                    <span>Collapse All</span>
                   </button>
                 </div>
               </div>

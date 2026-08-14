@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 import siteConfig from '../config/siteConfig';
+import { getIndianVoice, splitSpeechChunks, configureUtterance } from '../utils/speechUtils';
 
 /* ────────────────────────────────────────────────────────
    DESIGN TOKENS (matching codingagents.fyi palette)
@@ -319,39 +320,40 @@ function HeroSection({ onGenerate, loading }) {
   };
 
   return (
-    <section style={{ background: 'transparent', paddingTop: 56, paddingBottom: 64 }}>
-      {/* Expanded container for comfortable right-side width */}
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+    <section className="w-full section-gap" style={{ background: 'transparent' }}>
+      {/* Responsive container with generous padding */}
+      <div className="w-full max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left: 5 cols */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-5 sm:space-y-6 min-w-0">
             {/* Eyebrow */}
             <p style={{
               fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-              fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em',
+              fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.08em',
               textTransform: 'uppercase', color: T.green, margin: 0,
             }}>
               Socratic-AI v0.1 // Curriculum Engine
             </p>
 
-            {/* H1 — Balanced, compact, breathing */}
+            {/* H1 — Proportional, clean typography */}
             <h1 style={{
-              fontSize: 'clamp(2.2rem, 4.4vw, 3.9rem)',
-              fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.05,
+              fontSize: 'clamp(1.5rem, 4vw, 2.75rem)',
+              fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.15,
               color: T.ink, margin: 0,
+              wordBreak: 'break-word',
             }}>
-              Question<br />Everything.<br />
+              Question Everything.<br />
               <em style={{ fontStyle: 'italic', fontFamily: 'Georgia,serif', color: T.ink }}>Learn Deeply.</em>
             </h1>
 
             {/* Lede */}
-            <p style={{ fontSize: '0.96rem', color: '#4b5563', lineHeight: 1.65, margin: 0, maxWidth: 420 }}>
+            <p style={{ fontSize: '0.84rem', color: '#4b5563', lineHeight: 1.6, margin: 0, maxWidth: 400 }}>
               Generate rigorous, structured academic courses and interactive study notes.
               First-principles reasoning. Native LaTeX. Zero fluff.
             </p>
 
-            {/* Input with animated placeholder */}
-            <form onSubmit={handleSubmit} style={{ display: 'flex', marginTop: 14 }}>
+            {/* Input with animated placeholder - responsive stack on small mobile */}
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 sm:gap-0 my-3 sm:my-4 w-full max-w-md">
               <input
                 type="text"
                 value={topic}
@@ -359,11 +361,11 @@ function HeroSection({ onGenerate, loading }) {
                 placeholder={`Enter a topic, e.g. "${sampleTopics[placeholderIndex]}"`}
                 disabled={loading}
                 style={{
-                  flex: 1, border: `1px solid ${T.ink}`, borderRight: 'none',
-                  padding: '11px 16px', fontSize: '0.9rem', color: T.ink,
-                  background: T.panel, fontFamily: 'inherit', outline: 'none',
-                  minHeight: 44, transition: 'border-color 0.2s',
+                  border: `1px solid ${T.ink}`,
+                  background: T.panel,
+                  color: T.ink,
                 }}
+                className="flex-1 min-w-0 sm:border-r-0 px-3.5 py-2 sm:py-2.5 text-xs sm:text-sm outline-none transition-colors"
               />
               <button
                 type="submit"
@@ -372,28 +374,29 @@ function HeroSection({ onGenerate, loading }) {
                   border: `1px solid ${T.ink}`,
                   background: loading || !topic.trim() ? T.line : T.ink,
                   color: loading || !topic.trim() ? T.muted : 'white',
-                  padding: '11px 18px', fontWeight: 750, fontSize: '0.82rem',
                   cursor: loading || !topic.trim() ? 'not-allowed' : 'pointer',
-                  fontFamily: 'inherit', letterSpacing: '0.04em', whiteSpace: 'nowrap',
-                  transition: 'all 0.15s ease',
+                  fontFamily: 'ui-monospace,monospace',
+                  letterSpacing: '0.04em',
                 }}
-                className="hover:-translate-y-px active:translate-y-0"
+                className="px-4 py-2 sm:py-2.5 font-bold text-xs whitespace-nowrap cursor-pointer hover:bg-black transition-colors shrink-0 text-center"
               >
-                {loading ? 'Generating…' : 'GENERATE →'}
+                {loading ? 'GEN…' : 'GENERATE →'}
               </button>
             </form>
 
             {/* Feature tags */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingTop: 4 }}>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-0.5">
               {['AI-Powered', 'Structured Curriculum', 'Rich Lessons', 'PDF Export'].map(f => (
                 <span
                   key={f}
                   className="transition-colors hover:border-[#111827]"
                   style={{
-                    border: `1px solid ${T.line}`, padding: '3px 9px',
-                    fontSize: '0.72rem', color: T.muted,
+                    border: `1px solid ${T.line}`,
+                    padding: '2.5px 7px',
+                    fontSize: '0.66rem',
+                    color: T.muted,
                     fontFamily: 'ui-monospace,monospace',
-                    background: 'rgba(255,255,255,0.6)',
+                    background: 'rgba(255,255,255,0.7)',
                   }}
                 >
                   {f}
@@ -402,8 +405,8 @@ function HeroSection({ onGenerate, loading }) {
             </div>
           </div>
 
-          {/* Right: 7 cols — fully expanded so all badges & titles are 100% visible */}
-          <div className="hidden lg:block lg:col-span-7">
+          {/* Right: 7 cols — fully expanded */}
+          <div className="hidden lg:block lg:col-span-7 min-w-0">
             <WorkspacePanel />
           </div>
         </div>
@@ -441,19 +444,19 @@ function HowItWorks() {
   ];
 
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '80px 0', background: 'transparent' }}>
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ marginBottom: 40 }}>
-          <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: T.green, margin: '0 0 12px' }}>
+    <section className="w-full section-gap border-t border-[#d8d3c7]" style={{ background: 'transparent' }}>
+      <div className="w-full max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-12">
+        <div className="mb-8 sm:mb-10">
+          <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.70rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: T.green, margin: '0 0 10px' }}>
             [HOW_IT_WORKS // WORKFLOW]
           </p>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.7rem)', fontWeight: 900, lineHeight: 1.12, letterSpacing: '-0.02em', color: T.ink, margin: 0 }}>
+          <h2 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.3rem)', fontWeight: 900, lineHeight: 1.15, letterSpacing: '-0.02em', color: T.ink, margin: 0, wordBreak: 'break-word' }}>
             From any topic to mastery in 3 steps
           </h2>
         </div>
 
         {/* 3 Step Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
           {steps.map((step) => (
             <div
               key={step.num}
@@ -461,15 +464,15 @@ function HowItWorks() {
               style={{
                 border: `1px solid ${T.ink}`,
                 background: T.panel,
-                padding: '24px 26px',
-                boxShadow: '0 8px 24px rgba(17,24,39,0.04)',
+                padding: '20px 22px',
+                boxShadow: '0 4px 16px rgba(17,24,39,0.03)',
               }}
             >
               <div>
                 {/* Header Strip with Number and Stage */}
-                <div className="flex items-center justify-between pb-3 mb-5 border-b border-[#d8d3c7]">
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#d8d3c7]">
                   <div
-                    className="w-8 h-8 flex items-center justify-center font-mono text-xs font-black"
+                    className="w-6 h-6 flex items-center justify-center font-mono text-[11px] font-black"
                     style={{
                       border: `1px solid ${T.ink}`,
                       background: T.paper,
@@ -481,7 +484,7 @@ function HowItWorks() {
                   <span
                     style={{
                       fontFamily: 'ui-monospace,monospace',
-                      fontSize: '0.66rem',
+                      fontSize: '0.62rem',
                       fontWeight: 700,
                       color: T.muted,
                       letterSpacing: '0.06em',
@@ -491,25 +494,25 @@ function HowItWorks() {
                   </span>
                 </div>
 
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: T.ink, margin: '0 0 10px', letterSpacing: '-0.01em' }}>
+                <h3 style={{ fontSize: '1.02rem', fontWeight: 800, color: T.ink, margin: '0 0 6px', letterSpacing: '-0.01em' }}>
                   {step.title}
                 </h3>
-                <p style={{ fontSize: '0.88rem', color: '#4b5563', lineHeight: 1.65, margin: 0 }}>
+                <p style={{ fontSize: '0.84rem', color: '#4b5563', lineHeight: 1.55, margin: 0 }}>
                   {step.desc}
                 </p>
               </div>
 
               {/* Tag pill at bottom */}
-              <div className="pt-5 mt-6 border-t border-[#d8d3c7]">
+              <div className="pt-3 mt-4 border-t border-[#d8d3c7]">
                 <span
                   style={{
                     fontFamily: 'ui-monospace,monospace',
-                    fontSize: '0.68rem',
+                    fontSize: '0.66rem',
                     fontWeight: 700,
                     color: T.green,
                     background: 'rgba(47,111,79,0.06)',
                     border: `1px solid rgba(47,111,79,0.2)`,
-                    padding: '3px 8px',
+                    padding: '2px 7px',
                   }}
                 >
                   ✓ {step.tag}
@@ -567,24 +570,24 @@ function WhatYouGet() {
   ];
 
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '80px 0', background: 'transparent' }}>
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
+    <section className="w-full section-gap border-t border-[#d8d3c7]" style={{ background: 'transparent' }}>
+      <div className="w-full max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-12">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-10">
           <div>
-            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: T.green, margin: '0 0 12px' }}>
+            <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.70rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: T.green, margin: '0 0 10px' }}>
               [CURRICULUM_COMPONENTS // SPECIFICATION]
             </p>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.7rem)', fontWeight: 900, lineHeight: 1.12, letterSpacing: '-0.02em', color: T.ink, margin: 0 }}>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.3rem)', fontWeight: 900, lineHeight: 1.15, letterSpacing: '-0.02em', color: T.ink, margin: 0, wordBreak: 'break-word' }}>
               Everything you need to learn better
             </h2>
           </div>
-          <p style={{ color: T.muted, maxWidth: 380, fontSize: '0.92rem', lineHeight: 1.6, margin: 0 }}>
+          <p style={{ color: T.muted, maxWidth: 380, fontSize: '0.84rem', lineHeight: 1.5, margin: 0 }}>
             Every generated course comes completely structured out of the box with polymorphic learning blocks.
           </p>
         </div>
 
         {/* 3x2 Component Matrix */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {features.map((f) => (
             <div
               key={f.code}
@@ -592,20 +595,20 @@ function WhatYouGet() {
               style={{
                 border: `1px solid ${T.line}`,
                 background: T.panel,
-                padding: '22px 24px',
+                padding: '18px 20px',
               }}
             >
               <div>
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-2.5">
                   <span
                     style={{
                       fontFamily: 'ui-monospace,monospace',
-                      fontSize: '0.72rem',
+                      fontSize: '0.68rem',
                       fontWeight: 800,
                       color: T.ink,
                       border: `1px solid ${T.line}`,
                       background: T.paper,
-                      padding: '2px 8px',
+                      padding: '2px 6px',
                     }}
                   >
                     {f.code}
@@ -613,7 +616,7 @@ function WhatYouGet() {
                   <span
                     style={{
                       fontFamily: 'ui-monospace,monospace',
-                      fontSize: '0.66rem',
+                      fontSize: '0.62rem',
                       fontWeight: 700,
                       color: T.muted,
                       letterSpacing: '0.04em',
@@ -622,10 +625,10 @@ function WhatYouGet() {
                     [{f.tag}]
                   </span>
                 </div>
-                <h3 style={{ fontSize: '1.02rem', fontWeight: 800, color: T.ink, margin: '0 0 8px', letterSpacing: '-0.01em' }}>
+                <h3 style={{ fontSize: '0.94rem', fontWeight: 800, color: T.ink, margin: '0 0 4px', letterSpacing: '-0.01em' }}>
                   {f.title}
                 </h3>
-                <p style={{ fontSize: '0.86rem', color: '#4b5563', lineHeight: 1.6, margin: 0 }}>
+                <p style={{ fontSize: '0.82rem', color: '#4b5563', lineHeight: 1.5, margin: 0 }}>
                   {f.desc}
                 </p>
               </div>
@@ -686,14 +689,10 @@ function AnimatedAudioPlayer() {
     window.speechSynthesis.cancel();
 
     // Prepare sentence chunks for smooth progressive playback
-    const rawChunks = HINGLISH_SCRIPT.match(/[^.!?]+[.!?]*/g) || [HINGLISH_SCRIPT];
-    const chunks = rawChunks.map(c => c.trim()).filter(Boolean);
+    const chunks = splitSpeechChunks(HINGLISH_SCRIPT);
 
-    const indianVoice =
-      availableVoices.find(v => v.lang === 'hi-IN') ||
-      availableVoices.find(v => v.lang === 'en-IN') ||
-      availableVoices.find(v => v.default) ||
-      availableVoices[0];
+    const currentVoices = availableVoices.length > 0 ? availableVoices : window.speechSynthesis.getVoices();
+    const indianVoice = getIndianVoice(currentVoices);
 
     const playChunk = (index) => {
       if (index >= chunks.length) {
@@ -704,9 +703,7 @@ function AnimatedAudioPlayer() {
       }
 
       const utterance = new SpeechSynthesisUtterance(chunks[index]);
-      if (indianVoice) utterance.voice = indianVoice;
-      utterance.rate = 0.95; // Natural conversational tempo
-      utterance.pitch = 1.0;
+      configureUtterance(utterance, indianVoice, 0.96, 1.0);
 
       utterance.onstart = () => {
         setProgress((index / chunks.length));
@@ -736,7 +733,7 @@ function AnimatedAudioPlayer() {
 
   return (
     <div
-      className="card-hover-lift"
+      className="card-hover-lift w-full overflow-hidden"
       style={{
         border: `1px solid ${T.ink}`,
         background: T.panel,
@@ -813,7 +810,7 @@ function AnimatedAudioPlayer() {
         )}
 
         {/* Audio Player Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }} className="flex-wrap sm:flex-nowrap">
           {/* Play button */}
           <button
             onClick={handleTogglePlay}
@@ -834,7 +831,7 @@ function AnimatedAudioPlayer() {
           </button>
 
           {/* Dynamic Waveform */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 34 }}>
               {bars.map((h, i) => (
                 <div
@@ -843,7 +840,7 @@ function AnimatedAudioPlayer() {
                     flex: 1,
                     height: playing ? `${Math.max(15, (h * 100 * (0.6 + Math.sin(Date.now() / 200 + i) * 0.4)))}%` : `${h * 100}%`,
                     borderRadius: 1,
-                    background: (i / bars.length) < progress ? T.purple : playing ? T.ink : '#d8d3c7',
+                    background: (i / bars.length) < progress ? '#6b46c1' : playing ? T.ink : '#d8d3c7',
                     transition: 'height 0.1s ease, background 0.1s ease',
                   }}
                 />
@@ -859,12 +856,12 @@ function AnimatedAudioPlayer() {
           <button
             onClick={handleTogglePlay}
             style={{
-              border: `1px solid ${playing ? T.purple : T.line}`,
+              border: `1px solid ${playing ? '#6b46c1' : T.line}`,
               padding: '6px 10px',
               fontSize: '0.72rem',
               fontWeight: 800,
-              color: playing ? '#ffffff' : T.purple,
-              background: playing ? T.purple : T.paper,
+              color: playing ? '#ffffff' : '#6b46c1',
+              background: playing ? '#6b46c1' : T.paper,
               fontFamily: 'ui-monospace,monospace',
               whiteSpace: 'nowrap',
               cursor: 'pointer',
@@ -876,7 +873,7 @@ function AnimatedAudioPlayer() {
 
         {/* Progress Bar */}
         <div style={{ height: 4, background: '#e5e2d9', marginBottom: 12, overflow: 'hidden' }}>
-          <div style={{ height: '100%', background: T.purple, width: `${progress * 100}%`, transition: 'width 0.2s linear' }} />
+          <div style={{ height: '100%', background: '#6b46c1', width: `${progress * 100}%`, transition: 'width 0.2s linear' }} />
         </div>
 
         {/* Bottom Spec Strip */}
@@ -898,9 +895,9 @@ function AnimatedAudioPlayer() {
 ──────────────────────────────────────────────────────── */
 function HinglishSection() {
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '80px 0', background: 'rgba(255,255,255,0.6)' }}>
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <section className="section-gap border-t border-[#d8d3c7]" style={{ background: 'rgba(255,255,255,0.6)' }}>
+      <div className="w-full max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           {/* Left Column */}
           <div className="lg:col-span-6 space-y-6">
             <div>
@@ -908,7 +905,7 @@ function HinglishSection() {
                 [BILINGUAL_PEDAGOGY // NATIVE_VOICE]
               </p>
               <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.02em', color: T.ink, margin: '0 0 16px' }}>
-                In English.<br />In Hinglish.<br /><span style={{ color: T.purple }}>Your choice.</span>
+                In English.<br />In Hinglish.<br /><span style={{ color: '#6b46c1' }}>Your choice.</span>
               </h2>
               <p style={{ fontSize: '0.96rem', color: '#4b5563', lineHeight: 1.68, margin: 0 }}>
                 Complex ideas click fastest when explained in natural conversational language. Socratic AI pairs textbook-level English mathematical prose with intuitive, bilingual Hinglish audio narration.
@@ -943,7 +940,7 @@ function HinglishSection() {
           </div>
 
           {/* Right Column: Audio player */}
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-6 min-w-0">
             <AnimatedAudioPlayer />
           </div>
         </div>
@@ -957,12 +954,12 @@ function HinglishSection() {
 ──────────────────────────────────────────────────────── */
 function QuoteSection() {
   return (
-    <section style={{ borderTop: `1px solid ${T.line}`, padding: '72px 0', background: 'transparent' }}>
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
-        <p style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.6rem)', fontStyle: 'italic', fontFamily: 'Georgia,serif', color: T.ink, lineHeight: 1.55, margin: '0 0 18px' }}>
+    <section className="w-full section-gap border-t border-[#d8d3c7]" style={{ background: 'transparent' }}>
+      <div className="max-w-[680px] mx-auto px-5 sm:px-8 text-center">
+        <p style={{ fontSize: 'clamp(1.05rem, 2.2vw, 1.4rem)', fontStyle: 'italic', fontFamily: 'Georgia,serif', color: T.ink, lineHeight: 1.5, margin: '0 0 10px' }}>
           "Education is the kindling of a flame, not the filling of a vessel."
         </p>
-        <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: T.green }}>
+        <p style={{ fontFamily: 'ui-monospace,monospace', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: T.green }}>
           — Socrates
         </p>
       </div>
@@ -979,21 +976,21 @@ function Footer() {
       style={{
         borderTop: `1px solid ${T.line}`,
         color: T.muted,
-        padding: '24px 0',
+        padding: '20px 0',
         background: 'rgba(251, 250, 246, 0.92)',
         backdropFilter: 'blur(8px)',
         width: '100%',
       }}
       className="mt-auto"
     >
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
-        <p style={{ fontSize: '0.82rem', margin: 0, fontFamily: 'ui-monospace,monospace' }}>
+      <div className="w-full max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-center text-center sm:text-left">
+        <p style={{ fontSize: '0.80rem', margin: 0, fontFamily: 'ui-monospace,monospace' }}>
           A portfolio project by{' '}
           <a href={siteConfig.creator.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: T.ink, fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
             {siteConfig.creator.handle}
           </a>
         </p>
-        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+        <div className="flex flex-wrap gap-4 sm:gap-5 items-center justify-center">
           {[
             { label: 'GitHub', href: siteConfig.links.githubRepo, external: true },
             { label: 'About', href: '/about', external: false },
@@ -1006,7 +1003,7 @@ function Footer() {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ fontSize: '0.80rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
+                style={{ fontSize: '0.78rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
                 className="hover:text-[#111827] transition-colors"
               >
                 {item.label}
@@ -1015,7 +1012,7 @@ function Footer() {
               <Link
                 key={item.label}
                 to={item.href}
-                style={{ fontSize: '0.80rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
+                style={{ fontSize: '0.78rem', color: T.muted, textDecoration: 'none', fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}
                 className="hover:text-[#111827] transition-colors"
               >
                 {item.label}

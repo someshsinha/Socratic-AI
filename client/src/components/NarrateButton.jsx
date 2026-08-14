@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
+import { getIndianVoice, splitSpeechChunks, configureUtterance } from '../utils/speechUtils';
 
 export default function NarrateButton({ lessonId, autoPlay = false }) {
   const [state, setState] = useState('idle'); // idle | fetching | ready | playing | error
@@ -8,19 +9,23 @@ export default function NarrateButton({ lessonId, autoPlay = false }) {
   const [availableVoices, setAvailableVoices] = useState([]);
   const utterancesRef = useRef([]);
 
-  // 1. Fetch voices on mount
+  // 1. Fetch voices on mount and keep updated
   useEffect(() => {
     const fetchVoices = () => {
-      if (window.speechSynthesis) {
-        setAvailableVoices(window.speechSynthesis.getVoices());
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices && voices.length > 0) {
+          setAvailableVoices(voices);
+        }
       }
     };
+
     fetchVoices();
-    if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+    if (typeof window !== 'undefined' && window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
       window.speechSynthesis.onvoiceschanged = fetchVoices;
     }
     return () => {
-      if (window.speechSynthesis) {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
     };
@@ -66,6 +71,12 @@ export default function NarrateButton({ lessonId, autoPlay = false }) {
   }, [autoPlay, state, hinglishText]);
 
   const handlePlay = () => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) {
+      setErrorMsg('Speech synthesis is not supported on this browser.');
+      setState('error');
+      return;
+    }
+
     if (state === 'playing') {
       window.speechSynthesis.cancel();
       setState('ready');
@@ -74,23 +85,14 @@ export default function NarrateButton({ lessonId, autoPlay = false }) {
 
     if (!hinglishText) return;
 
-    if (availableVoices.length === 0) {
-      setErrorMsg('No speech engine found in browser.');
-      setState('error');
-      return;
-    }
-
+    // Refresh voices list in case mobile engine loaded them late
+    const currentVoices = availableVoices.length > 0 ? availableVoices : window.speechSynthesis.getVoices();
     setErrorMsg('');
     
-    const rawChunks = hinglishText.match(/[^.!?]+[.!?]*/g) || [hinglishText];
-    const chunks = rawChunks.map(c => c.trim()).filter(c => c.length > 0);
-    
+    const chunks = splitSpeechChunks(hinglishText);
     utterancesRef.current = [];
 
-    const indianVoice = availableVoices.find(v => v.lang === 'hi-IN') 
-      || availableVoices.find(v => v.lang === 'en-IN') 
-      || availableVoices.find(v => v.default) 
-      || availableVoices[0];
+    const indianVoice = getIndianVoice(currentVoices);
 
     const playNextChunk = (index) => {
       if (index >= chunks.length) {
@@ -99,7 +101,7 @@ export default function NarrateButton({ lessonId, autoPlay = false }) {
       }
 
       const utterance = new SpeechSynthesisUtterance(chunks[index]);
-      if (indianVoice) utterance.voice = indianVoice;
+      configureUtterance(utterance, indianVoice, 0.96, 1.0);
 
       utterance.onend = () => playNextChunk(index + 1);
       
@@ -120,24 +122,18 @@ export default function NarrateButton({ lessonId, autoPlay = false }) {
   };
 
   return (
-    <div className="flex flex-col items-center sm:items-end">
+    <div className="flex flex-col items-stretch sm:items-end w-full sm:w-auto">
       <button 
         onClick={handlePlay} 
         disabled={state === 'fetching' || state === 'idle'}
         style={{
           fontFamily: 'ui-monospace,monospace',
-          fontSize: '0.76rem',
-          fontWeight: 700,
           border: `1px solid ${state === 'playing' ? '#991b1b' : '#111827'}`,
           background: state === 'playing' ? '#991b1b' : '#111827',
           color: '#ffffff',
-          padding: '7px 14px',
           cursor: state === 'fetching' || state === 'idle' ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
         }}
-        className="hover:-translate-y-px active:translate-y-0 transition-transform shadow-sm"
+        className="w-full sm:w-auto px-3 py-2 text-[11px] sm:text-xs font-bold tracking-tight whitespace-nowrap flex items-center justify-center gap-1.5 hover:-translate-y-px active:translate-y-0 transition-all shadow-xs"
       >
         {state === 'playing' ? (
           <span className="flex items-center gap-1.5">
@@ -153,7 +149,7 @@ export default function NarrateButton({ lessonId, autoPlay = false }) {
           <span>[ RETRY AUDIO ⚠️ ]</span>
         ) : (
           <span className="flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
             </svg>
             <span>[ PLAY AUDIO NARRATION ]</span>
@@ -162,7 +158,7 @@ export default function NarrateButton({ lessonId, autoPlay = false }) {
       </button>
 
       {state === 'error' && errorMsg && (
-        <span className="text-[10px] text-red-700 font-mono mt-1">
+        <span className="text-[10px] text-red-700 font-mono mt-1 text-center sm:text-right">
           {errorMsg}
         </span>
       )}

@@ -21,24 +21,24 @@ export default function About() {
 
   return (
     <div className="flex-1 flex flex-col justify-between" style={{ background: 'transparent', color: T.ink }}>
-      <div className="flex-1" style={{ maxWidth: 1240, width: '100%', margin: '0 auto', padding: '40px 24px 72px' }}>
+      <div className="page-content">
         
         {/* ═════════════════════════════════════════════════════════════
             1. HERO SECTION: Built for curious minds. Powered by purpose.
         ═════════════════════════════════════════════════════════════ */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center pb-20 border-b border-[#d8d3c7]">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center pb-16 sm:pb-20 border-b border-[#d8d3c7]">
           {/* Left Column: Heading, Relaxed Spacing & Mission */}
-          <div className="lg:col-span-7 space-y-7">
+          <div className="lg:col-span-7 space-y-6 sm:space-y-8">
             {/* Eyebrow */}
             <p
               style={{
                 fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-                fontSize: '0.75rem',
+                fontSize: '0.72rem',
                 fontWeight: 700,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 color: T.green,
-                margin: '0 0 14px',
+                margin: '0 0 12px',
               }}
             >
               [ABOUT // SOCRATIC_AI]
@@ -47,13 +47,14 @@ export default function About() {
             {/* Main Headline with relaxed word spacing and elegant leading */}
             <h1
               style={{
-                fontSize: 'clamp(2.4rem, 5vw, 3.8rem)',
+                fontSize: 'clamp(1.85rem, 5.2vw, 3.6rem)',
                 fontWeight: 900,
                 letterSpacing: '-0.015em',
-                wordSpacing: '0.06em',
                 lineHeight: 1.14,
                 color: T.ink,
-                margin: '0 0 20px',
+                margin: '0 0 16px',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
               }}
             >
               Built for curious minds.{' '}

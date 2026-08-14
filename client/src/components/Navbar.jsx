@@ -83,26 +83,26 @@ export default function Navbar() {
   return (
     <nav
       className="sticky top-0 z-50 w-full border-b print:hidden"
-      style={{ background: 'rgba(251,250,246,0.94)', backdropFilter: 'blur(14px)', borderColor: '#d8d3c7' }}
+      style={{ background: 'rgba(251,250,246,0.95)', backdropFilter: 'blur(14px)', borderColor: '#d8d3c7' }}
     >
-      <div className="max-w-[1240px] mx-auto px-6 flex items-center justify-between gap-6 py-2">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-6 py-2.5 sm:py-3">
         {/* Logo */}
-        <Link to="/" className="flex-shrink-0">
-          <img src={logoImg} alt="Socratic AI" className="h-20 w-auto object-contain" />
+        <Link to="/" className="flex-shrink-0 flex items-center">
+          <img src={logoImg} alt="Socratic AI" className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-all" />
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-0.5">
+        {/* Desktop Nav Links */}
+        <div className="hidden md:flex items-center gap-1">
           <button
             onClick={handleCoursesClick}
-            className="px-3 py-1.5 text-sm font-medium border border-transparent text-[#5f6673] hover:border-[#d8d3c7] hover:bg-white/70 hover:text-[#111827] transition-all cursor-pointer"
+            className="px-3.5 py-1.5 text-sm font-medium border border-transparent text-[#5f6673] hover:border-[#d8d3c7] hover:bg-white/70 hover:text-[#111827] transition-all cursor-pointer"
           >
             Courses
           </button>
           <NavLink
             to="/about"
             className={({ isActive }) =>
-              `px-3 py-1.5 text-sm font-medium border transition-all ${
+              `px-3.5 py-1.5 text-sm font-medium border transition-all ${
                 isActive
                   ? 'border-[#111827] bg-white text-[#111827]'
                   : 'border-transparent text-[#5f6673] hover:border-[#d8d3c7] hover:bg-white/70 hover:text-[#111827]'
@@ -113,8 +113,8 @@ export default function Navbar() {
           </NavLink>
         </div>
 
-        {/* Auth action / Profile Dropdown */}
-        <div className="flex items-center gap-3">
+        {/* Desktop Auth / Profile Dropdown */}
+        <div className="hidden md:flex items-center gap-3">
           {isLoading ? (
             <div className="h-5 w-5 rounded-full border-2 border-gray-300 border-t-gray-700 animate-spin" />
           ) : isAuthenticated ? (
@@ -122,7 +122,7 @@ export default function Navbar() {
               {/* Profile Avatar Pill Trigger */}
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className="flex items-center gap-2 py-1 px-2 border border-[#d8d3c7] hover:border-[#111827] bg-white hover:bg-gray-50 transition-all cursor-pointer rounded-sm"
+                className="flex items-center gap-2 py-1 px-2.5 border border-[#d8d3c7] hover:border-[#111827] bg-white hover:bg-gray-50 transition-all cursor-pointer rounded-sm"
                 style={{
                   boxShadow: profileDropdownOpen ? '0 2px 8px rgba(17,24,39,0.08)' : 'none',
                 }}
@@ -156,7 +156,7 @@ export default function Navbar() {
                 </svg>
               </button>
 
-              {/* Profile Dropdown Menu */}
+              {/* Desktop Profile Dropdown Menu */}
               {profileDropdownOpen && (
                 <div
                   className="absolute right-0 mt-2 w-72 bg-white border border-[#d8d3c7] z-50 animate-in fade-in slide-in-from-top-1 duration-150"
@@ -231,14 +231,17 @@ export default function Navbar() {
               Start Learning →
             </button>
           )}
+        </div>
 
-          {/* Mobile hamburger */}
+        {/* Mobile Nav Button */}
+        <div className="flex md:hidden items-center">
           <button
-            className="md:hidden p-1.5 border"
+            className="p-2 border bg-white cursor-pointer hover:border-[#111827] transition-all flex items-center justify-center"
             style={{ borderColor: '#d8d3c7' }}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
           >
-            <svg className="w-4 h-4" style={{ color: '#111827' }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-[#111827]" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
               {mobileMenuOpen
                 ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 : <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 12h18M3 17h18" />}
@@ -247,66 +250,113 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Drawer Overlay Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t px-6 py-3 space-y-1" style={{ background: '#fbfaf6', borderColor: '#d8d3c7' }}>
-          <button
-            onClick={(e) => { setMobileMenuOpen(false); handleCoursesClick(e); }}
-            className="block w-full text-left px-3 py-2 text-sm border border-transparent text-[#5f6673] hover:text-[#111827]"
-          >
-            Courses
-          </button>
-          <NavLink
-            to="/about"
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 top-[52px] sm:top-[60px] bg-black/20 z-40 md:hidden backdrop-blur-xs"
             onClick={() => setMobileMenuOpen(false)}
-            className={({ isActive }) =>
-              `block px-3 py-2 text-sm border ${isActive ? 'font-semibold' : ''}`
-            }
-            style={({ isActive }) => ({
-              borderColor: isActive ? '#111827' : 'transparent',
-              background: isActive ? 'white' : 'transparent',
-              color: isActive ? '#111827' : '#5f6673',
-            })}
-          >
-            About
-          </NavLink>
+          />
 
-          {isAuthenticated ? (
-            <div className="pt-2 border-t border-[#d8d3c7] space-y-1">
+          {/* Floating Drawer */}
+          <div
+            className="md:hidden absolute top-full left-0 w-full border-b border-[#d8d3c7] bg-[#fbfaf6] animate-in fade-in slide-in-from-top-1 duration-150 shadow-2xl z-50"
+          >
+            {/* User profile card inside mobile menu if authenticated */}
+            {isAuthenticated && (
+              <div className="px-5 py-3.5 bg-white border-b border-[#d8d3c7] flex items-center gap-3">
+                {user?.picture && !imgError ? (
+                  <img
+                    src={user.picture}
+                    alt={displayName}
+                    onError={() => setImgError(true)}
+                    className="w-9 h-9 object-cover rounded-full border border-[#d8d3c7] shrink-0"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-[#4f46e5] text-white font-bold flex items-center justify-center shrink-0 text-xs">
+                    {initials}
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-extrabold text-[#111827] truncate m-0">
+                    {displayName}
+                  </p>
+                  <p className="text-[11px] text-[#5f6673] truncate m-0 font-mono">
+                    {displayEmail}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="py-2 px-3 space-y-1">
               <button
-                onClick={() => { setMobileMenuOpen(false); navigate('/my-courses'); }}
-                className="w-full px-3 py-2 border text-sm font-bold text-left cursor-pointer flex items-center gap-2"
-                style={{ borderColor: '#d8d3c7', background: 'white', color: '#111827' }}
+                onClick={(e) => { setMobileMenuOpen(false); handleCoursesClick(e); }}
+                className="w-full text-left px-3.5 py-2.5 text-sm font-semibold text-[#111827] hover:bg-white border border-transparent hover:border-[#d8d3c7] transition-all cursor-pointer flex items-center justify-between"
               >
-                <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                My Course Library
+                <span>Courses</span>
+                <span className="text-xs font-mono text-gray-400">→</span>
               </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  logout({ logoutParams: { returnTo: window.location.origin } });
-                }}
-                className="w-full px-3 py-2 border text-sm font-bold text-left cursor-pointer flex items-center gap-2 text-red-700"
-                style={{ borderColor: '#d8d3c7', background: 'white' }}
+
+              <NavLink
+                to="/about"
+                onClick={() => setMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  `w-full text-left px-3.5 py-2.5 text-sm font-semibold flex items-center justify-between transition-all ${
+                    isActive
+                      ? 'border border-[#111827] bg-white text-[#111827]'
+                      : 'text-[#5f6673] hover:text-[#111827] hover:bg-white border border-transparent hover:border-[#d8d3c7]'
+                  }`
+                }
               >
-                <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Sign Out
-              </button>
+                <span>About</span>
+                <span className="text-xs font-mono text-gray-400">→</span>
+              </NavLink>
+
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); navigate('/my-courses'); }}
+                    className="w-full px-3.5 py-2.5 text-sm font-semibold text-left cursor-pointer flex items-center justify-between text-[#111827] hover:bg-white border border-transparent hover:border-[#d8d3c7] transition-all"
+                  >
+                    <span className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-indigo-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                      <span>My Course Library</span>
+                    </span>
+                    <span className="text-xs font-mono text-gray-400">→</span>
+                  </button>
+
+                  <div className="pt-2 mt-1 border-t border-[#d8d3c7]">
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        logout({ logoutParams: { returnTo: window.location.origin } });
+                      }}
+                      className="w-full px-3.5 py-2.5 text-xs font-bold text-left cursor-pointer flex items-center gap-2 text-red-700 hover:bg-red-50/70 transition-colors"
+                    >
+                      <svg className="w-4 h-4 text-red-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="pt-2">
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); handleStartLearningClick(); }}
+                    className="w-full px-4 py-2.5 border text-sm font-bold text-white text-center cursor-pointer shadow-xs"
+                    style={{ borderColor: '#111827', background: '#111827' }}
+                  >
+                    Start Learning →
+                  </button>
+                </div>
+              )}
             </div>
-          ) : (
-            <button
-              onClick={() => { setMobileMenuOpen(false); handleStartLearningClick(); }}
-              className="w-full mt-2 px-3 py-2 border text-sm font-bold text-white text-left cursor-pointer"
-              style={{ borderColor: '#111827', background: '#111827' }}
-            >
-              Start Learning →
-            </button>
-          )}
-        </div>
+          </div>
+        </>
       )}
     </nav>
   );
