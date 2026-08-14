@@ -1034,7 +1034,7 @@ export default function MyCourses() {
                 margin: '0 0 6px',
               }}
             >
-              [AI_CURRICULUM_ENGINE // V1.0]
+              [AI_CURRICULUM_ENGINE // V0.1]
             </p>
 
             <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: T.ink, margin: '0 0 10px' }}>
