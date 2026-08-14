@@ -37,10 +37,14 @@ export default function CodeBlock({ text, language }) {
           <button
             type="button"
             onClick={() => setWrapLines(!wrapLines)}
-            className="font-mono text-[10.5px] sm:text-xs font-bold text-gray-400 hover:text-white transition-colors cursor-pointer px-1.5 py-0.5 rounded hover:bg-gray-800"
-            title={wrapLines ? "Switch to horizontal scroll" : "Wrap long lines"}
+            className={`font-mono text-[10.5px] sm:text-xs font-bold transition-all cursor-pointer px-2 py-0.5 rounded border ${
+              wrapLines
+                ? 'bg-purple-900/60 text-purple-300 border-purple-500/50 shadow-xs'
+                : 'text-gray-400 hover:text-white border-transparent hover:bg-gray-800'
+            }`}
+            title={wrapLines ? "Switch to horizontal scroll" : "Wrap code lines"}
           >
-            {wrapLines ? '[ NO WRAP ]' : '[ WRAP ]'}
+            {wrapLines ? '✓ [ WRAPPED ]' : '[ WRAP ]'}
           </button>
 
           {/* Copy Button */}
@@ -64,16 +68,34 @@ export default function CodeBlock({ text, language }) {
           language={language ? language.toLowerCase() : 'javascript'}
           style={tomorrow}
           showLineNumbers={true}
+          wrapLines={wrapLines}
           wrapLongLines={wrapLines}
+          lineProps={{
+            style: {
+              wordBreak: wrapLines ? 'break-all' : 'normal',
+              whiteSpace: wrapLines ? 'pre-wrap' : 'pre',
+            },
+          }}
           customStyle={{
             margin: 0,
             padding: '0.75rem 0.85rem',
             background: '#111827',
             fontSize: 'clamp(0.70rem, 2.7vw, 0.82rem)',
-            lineHeight: '1.58',
+            lineHeight: '1.6',
             fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
-            overflowX: 'auto',
+            whiteSpace: wrapLines ? 'pre-wrap' : 'pre',
+            wordBreak: wrapLines ? 'break-all' : 'normal',
+            overflowWrap: wrapLines ? 'anywhere' : 'normal',
+            overflowX: wrapLines ? 'hidden' : 'auto',
             WebkitOverflowScrolling: 'touch',
+          }}
+          codeTagProps={{
+            style: {
+              whiteSpace: wrapLines ? 'pre-wrap' : 'pre',
+              wordBreak: wrapLines ? 'break-all' : 'normal',
+              overflowWrap: wrapLines ? 'anywhere' : 'normal',
+              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
+            },
           }}
           lineNumberStyle={{
             color: '#4b5563',
@@ -89,4 +111,5 @@ export default function CodeBlock({ text, language }) {
     </div>
   );
 }
+
 

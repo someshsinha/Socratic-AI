@@ -265,7 +265,9 @@ On mobile screens, code blocks displayed clipped lines on long comments/statemen
 
 ### Resolution Steps
 1. **Responsive Typography**: Set font size to `clamp(0.70rem, 2.7vw, 0.82rem)` with compact `1.8em` line-number gutters on mobile.
-2. **Interactive Wrap Toggle**: Added a `[ WRAP ]` / `[ NO WRAP ]` switch in the code header bar, enabling users to toggle between line wrapping and horizontal scrolling.
+2. **Interactive Wrap Toggle with Prism Overrides**: Added a `[ WRAP ]` / `✓ [ WRAPPED ]` switch with explicit `lineProps` (`whiteSpace: 'pre-wrap'`, `wordBreak: 'break-all'`) and `codeTagProps` style overrides to bypass Prism's default `whiteSpace: pre` restriction.
 3. **Smooth Touch Scrolling**: Enabled `-webkit-overflow-scrolling: touch` and added dark custom scrollbar styles in `index.css`.
+4. **Mobile Lesson Table of Contents (`LessonViewer.jsx`)**: Added a collapsible accordion `[ TOC // N SECTIONS ▾ ]` at the top of lessons on mobile viewports, enabling single-tap section jumping.
+
 
 

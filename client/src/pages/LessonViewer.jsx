@@ -30,6 +30,7 @@ export default function LessonViewer() {
   const [error, setError] = useState(null);
   const [activeSectionId, setActiveSectionId] = useState('');
   const [tocItems, setTocItems] = useState([]);
+  const [mobileTocOpen, setMobileTocOpen] = useState(false);
 
   // 1. Fetch lesson & parent course metadata
   useEffect(() => {
@@ -327,6 +328,56 @@ export default function LessonViewer() {
                 </p>
               )}
             </div>
+
+            {/* Mobile Table of Contents Bar (visible only on mobile lg:hidden) */}
+            {tocItems.length > 0 && (
+              <div className="lg:hidden print:hidden border border-[#d8d3c7] bg-white my-3">
+                <button
+                  type="button"
+                  onClick={() => setMobileTocOpen(!mobileTocOpen)}
+                  className="w-full px-3.5 py-2.5 flex items-center justify-between text-left cursor-pointer hover:bg-gray-50/70 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[#2f6f4f] uppercase tracking-wider">
+                      [ TOC // {tocItems.length} SECTIONS ]
+                    </span>
+                  </div>
+                  <span className="font-mono text-[11px] text-gray-600 font-bold">
+                    {mobileTocOpen ? '▲ HIDE' : '▼ JUMP TO SECTION'}
+                  </span>
+                </button>
+
+                {mobileTocOpen && (
+                  <div className="px-3 py-2.5 border-t border-[#d8d3c7] bg-[#fbfaf6] divide-y divide-[#e5e2d9] space-y-1">
+                    {tocItems.map((item, idx) => {
+                      const isActive = item.id === activeSectionId;
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            setMobileTocOpen(false);
+                            handleScrollTo(item.id);
+                          }}
+                          className={`w-full text-left py-2 px-2 text-xs flex items-center justify-between cursor-pointer rounded transition-colors ${
+                            isActive
+                              ? 'bg-white font-extrabold text-[#111827] shadow-xs'
+                              : 'text-gray-700 hover:bg-white/60'
+                          }`}
+                        >
+                          <span className="truncate pr-2">
+                            <span className="font-mono text-[10px] text-gray-400 mr-2">
+                              {String(idx + 1).padStart(2, '0')}
+                            </span>
+                            {item.title}
+                          </span>
+                          <span className="font-mono text-[10px] text-gray-400 shrink-0">→</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Compact Learning Objectives Box */}
             {lesson.objectives && lesson.objectives.length > 0 && (
