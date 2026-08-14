@@ -10,50 +10,22 @@ Socratic AI is structured as a decoupled full-stack application consisting of an
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
-graph TB
-    subgraph ClientLayer ["Client Layer (Browser)"]
-        ReactApp["React 19 SPA (Vite)"]
-        Router["React Router 7"]
-        KaTeX["KaTeX / Remark Math Pipeline"]
-        CodeHighlighter["Prism Syntax Highlighter"]
-        AudioEngine["Web Audio / TTS Player"]
-        Auth0SDK["@auth0/auth0-react SDK"]
-    end
+flowchart TD
+    Client["💻 Client Layer (React 19 + Vite)\n• KaTeX LaTeX & Math Pipeline\n• Prism Syntax Highlighter & Wrap Controls\n• Web Audio / Edge TTS Player\n• Auth0 React SDK"]
+    
+    API["⚡ API Gateway (Node.js + Express 5)\n• Stateless RS256 JWT Verification\n• Course & Lesson Controllers\n• TTS Narration & YouTube Search"]
 
-    subgraph APILayer ["API & Middleware Layer (Node.js / Express 5)"]
-        ExpressApp["Express.js 5 Application"]
-        AuthGuard["JWT Verification Middleware (RS256)"]
-        Validator["express-validator Rules"]
-        ErrorHandler["Centralized Error Middleware"]
-    end
+    AI["🤖 Gemini AI Engine\nGoogle Gemini 2.5 Flash\n(Structured Curriculum & Lesson Synthesis)"]
+    DB[("🗄️ Persistence Layer\nMongoDB Atlas\n(Courses, Modules, Lessons)")]
+    YT["📺 Supplementary Video\nYouTube Data API v3\n(Academic Lectures)"]
+    Auth["🔐 Identity Provider\nAuth0 Cloud\n(Stateless OIDC / JWKS Verification)"]
 
-    subgraph ServiceLayer ["Business Logic & Services"]
-        CourseService["Curriculum Synthesis Service"]
-        LessonService["Lesson Generation Service"]
-        TTSService["Edge TTS Audio Service"]
-        YouTubeService["YouTube Data API Service"]
-    end
-
-    subgraph StorageLayer ["Persistence & Cloud"]
-        MongoDB[(MongoDB Atlas)]
-        Auth0Cloud["Auth0 Identity Provider"]
-        GeminiAPI["Google Gemini 2.5 Flash"]
-        YouTubeAPI["YouTube Data API v3"]
-    end
-
-    ReactApp --> Router
-    Router --> Auth0SDK
-    Auth0SDK <-->|OAuth 2.0 PKCE| Auth0Cloud
-    ReactApp --> KaTeX & CodeHighlighter & AudioEngine
-
-    ReactApp -->|HTTP REST + Bearer Token| ExpressApp
-    ExpressApp --> AuthGuard --> Validator
-    Validator --> CourseService & LessonService & TTSService & YouTubeService
-    ErrorHandler -.->|Catches Exceptions| ExpressApp
-
-    CourseService & LessonService -->|JSON Schema / Prompts| GeminiAPI
-    YouTubeService -->|Search Queries| YouTubeAPI
-    CourseService & LessonService <-->|Mongoose Models| MongoDB
+    Client -->|REST API + Bearer Token| API
+    Client <-->|OAuth 2.0 PKCE| Auth
+    API -->|Prompt & JSON Schema| AI
+    API <-->|Mongoose ODM| DB
+    API -->|Video Discovery| YT
+    API -.->|JWKS Key Verification| Auth
 ```
 
 ---

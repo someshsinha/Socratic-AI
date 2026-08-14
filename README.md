@@ -63,40 +63,21 @@ Generic AI chatbots generate unstructured, superficial walls of text without con
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 flowchart TD
-    subgraph Client["Frontend Client (React 19 + Vite)"]
-        UI[Editorial Academic UI]
-        Router[React Router 7]
-        AuthClient[Auth0 React SDK]
-        KatexEngine[KaTeX & Markdown Pipeline]
-        LessonViewer[Lesson Viewer & Audio Player]
-    end
+    Client["💻 Client (React 19 + Vite)\n• KaTeX LaTeX & Math Pipeline\n• Prism Syntax Highlighter & Code Controls\n• Web Audio TTS Narration Player\n• Auth0 React SDK"]
+    
+    API["⚡ REST API (Node.js + Express 5)\n• Stateless RS256 JWT Authorization\n• Curriculum & Lesson Synthesis Engine\n• YouTube Media & TTS Services"]
 
-    subgraph Backend["Backend API (Express 5 + Node.js)"]
-        AuthMiddleware[Auth0 JWT Bearer Middleware]
-        CourseController[Course & Module Controller]
-        LessonController[Lesson Generation Controller]
-        TTSController[TTS Audio Synthesis Controller]
-    end
+    AI["🤖 AI Synthesis\nGoogle Gemini 2.5 Flash\n(Syllabus & Lesson Engine)"]
+    DB[("🗄️ Database\nMongoDB Atlas\n(Courses, Modules, Lessons)")]
+    YT["📺 Video Discovery\nYouTube Data API v3\n(Academic Lectures)"]
+    Auth["🔐 Identity Cloud\nAuth0 OIDC\n(OAuth 2.0 / JWT)"]
 
-    subgraph External["External Cloud & AI Services"]
-        Gemini[Google Gemini 2.5 Flash]
-        YouTube[YouTube Data API v3]
-        Auth0Cloud[Auth0 Identity Cloud]
-        MongoCloud[(MongoDB Atlas)]
-    end
-
-    UI --> Router
-    Router --> AuthClient
-    AuthClient <-->|OAuth 2.0 / JWT| Auth0Cloud
-    Router --> KatexEngine --> LessonViewer
-
-    UI -->|REST + Bearer Token| Backend
-    Backend --> AuthMiddleware
-    AuthMiddleware --> CourseController & LessonController & TTSController
-
-    LessonController -->|Prompt Engineering & JSON Schema| Gemini
-    LessonController -->|Supplementary Video Discovery| YouTube
-    CourseController <-->|Mongoose Models| MongoCloud
+    Client -->|REST API + Bearer Token| API
+    Client <-->|OAuth 2.0 PKCE| Auth
+    API -->|Prompt & JSON Schema| AI
+    API <-->|Mongoose ODM| DB
+    API -->|Search Queries| YT
+    API -.->|JWKS Key Verification| Auth
 ```
 
 ---
@@ -286,29 +267,21 @@ Key engineering resolutions include:
 
 ## 👤 Author & Creator
 
-<table align="center">
-  <tr>
-    <td align="center">
-      <a href="https://github.com/someshsinha">
-        <img src="https://github.com/someshsinha.png" width="100px;" alt="Somesh Sinha" style="border-radius:50%"/>
-        <br />
-        <sub><b>Somesh Sinha</b></sub>
-      </a>
-      <br />
-      <small>Computer Engineering @ I²IT Pune</small>
-      <br />
-      <a href="https://www.linkedin.com/in/somesh-sinha-a8614b284/" title="LinkedIn">
-        <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white"/>
-      </a>
-      <a href="https://github.com/someshsinha" title="GitHub">
-        <img src="https://img.shields.io/badge/GitHub-100000?style=flat-square&logo=github&logoColor=white"/>
-      </a>
-      <a href="mailto:someshsinha902@gmail.com" title="Email">
-        <img src="https://img.shields.io/badge/Email-D14836?style=flat-square&logo=gmail&logoColor=white"/>
-      </a>
-    </td>
-  </tr>
-</table>
+<div align="center">
+
+<a href="https://github.com/someshsinha">
+  <img src="https://github.com/someshsinha.png" width="96" height="96" alt="Somesh Sinha" style="border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
+</a>
+
+<br/>
+
+### **[Somesh Sinha](https://github.com/someshsinha)**
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/somesh-sinha-a8614b284/)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/someshsinha)
+[![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:someshsinha902@gmail.com)
+
+</div>
 
 ---
 
