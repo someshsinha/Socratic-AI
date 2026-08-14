@@ -7,11 +7,11 @@ import api, { setAuthToken } from '../utils/api';
    DESIGN TOKENS (Identical to Landing Page template)
 ──────────────────────────────────────────────────────── */
 const T = {
-  ink:   '#111827',
+  ink: '#111827',
   muted: '#5f6673',
   paper: '#fbfaf6',
   panel: '#ffffff',
-  line:  '#d8d3c7',
+  line: '#d8d3c7',
   green: '#2f6f4f',
   accent: '#315f88',
 };
@@ -190,7 +190,7 @@ export default function MyCourses() {
     <div style={{ background: 'transparent', minHeight: '100vh', color: T.ink }}>
       {/* ── Main Container ── */}
       <div style={{ maxWidth: 1240, margin: '0 auto', padding: '48px 24px 16px' }}>
-        
+
         {/* ── Title & Search Header ── */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div>
@@ -312,7 +312,7 @@ export default function MyCourses() {
         ) : courses.length === 0 ? (
           /* ── Empty State ── */
           <div
-            className="p-12 text-center space-y-5 max-w-xl mx-auto"
+            className="p-12 sm:p-16 text-center space-y-6 max-w-xl mx-auto"
             style={{ border: `1px solid ${T.line}`, background: T.panel }}
           >
             <p
@@ -320,7 +320,7 @@ export default function MyCourses() {
                 fontFamily: 'ui-monospace,monospace',
                 fontSize: '0.74rem',
                 fontWeight: 700,
-                color: T.muted,
+                color: T.green,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
               }}
@@ -330,24 +330,29 @@ export default function MyCourses() {
             <h3 style={{ fontSize: '1.45rem', fontWeight: 900, color: T.ink, margin: 0 }}>
               No Courses Generated Yet
             </h3>
-            <p style={{ fontSize: '0.9rem', color: T.muted, lineHeight: 1.6, margin: '0 auto', maxWidth: 420 }}>
+            <p style={{ fontSize: '0.9rem', color: T.muted, lineHeight: 1.65, margin: '0 auto', maxWidth: 420 }}>
               You haven't created any courses yet. Enter any topic to let our AI build your first structured curriculum.
             </p>
-            <button
-              onClick={() => setShowNewCourseModal(true)}
-              style={{
-                border: `1px solid ${T.ink}`,
-                background: T.ink,
-                color: '#ffffff',
-                padding: '11px 22px',
-                fontSize: '0.84rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-              }}
-              className="hover:-translate-y-px active:translate-y-0 transition-transform"
-            >
-              + CREATE YOUR FIRST COURSE
-            </button>
+            
+            {/* Generous spacing around button */}
+            <div className="pt-6 pb-2">
+              <button
+                onClick={() => setShowNewCourseModal(true)}
+                style={{
+                  border: `1px solid ${T.ink}`,
+                  background: T.ink,
+                  color: '#ffffff',
+                  padding: '13px 28px',
+                  fontSize: '0.84rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  letterSpacing: '0.03em',
+                }}
+                className="hover:-translate-y-px active:translate-y-0 transition-transform shadow-sm"
+              >
+                + CREATE YOUR FIRST COURSE
+              </button>
+            </div>
           </div>
         ) : (
           /* ── Real Courses Grid (3 Columns) ── */
