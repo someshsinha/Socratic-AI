@@ -9,34 +9,50 @@ This document provides a comprehensive technical overview of **Socratic AI**, co
 Socratic AI is structured as a decoupled full-stack application consisting of an **Editorial Single-Page Application (SPA)** on the frontend and an **Asynchronous RESTful Microservice** on the backend, integrated with external LLM engines, identity providers, and media APIs.
 
 ```mermaid
-%%{init: {'theme': 'dark'}}%%
-flowchart LR
-    subgraph Client ["🖥️ Client Layer (React 19)"]
-        A["Academic Editorial UI"]
-        B["KaTeX LaTeX Pipeline"]
-        C["Prism Syntax Highlighter"]
-        D["Edge TTS Voice Player"]
+graph TB
+    subgraph ClientLayer ["Client Layer (Browser)"]
+        ReactApp["React 19 SPA (Vite)"]
+        Router["React Router 7"]
+        KaTeX["KaTeX / Remark Math Pipeline"]
+        CodeHighlighter["Prism Syntax Highlighter"]
+        AudioEngine["Web Audio / TTS Player"]
+        Auth0SDK["@auth0/auth0-react SDK"]
     end
 
-    subgraph API ["⚡ API Gateway (Express 5)"]
-        E["Express REST API"]
-        F["Auth0 RS256 Guard"]
-        G["Curriculum Synthesizer"]
-        H["Lesson Engine"]
+    subgraph APILayer ["API & Middleware Layer (Node.js / Express 5)"]
+        ExpressApp["Express.js 5 Application"]
+        AuthGuard["JWT Verification Middleware (RS256)"]
+        Validator["express-validator Rules"]
+        ErrorHandler["Centralized Error Middleware"]
     end
 
-    subgraph Cloud ["☁️ Cloud & AI Services"]
-        I["🤖 Google Gemini 2.5 Flash"]
-        J[("🗄️ MongoDB Atlas")]
-        K["📺 YouTube Data API v3"]
-        L["🔐 Auth0 Identity Cloud"]
+    subgraph ServiceLayer ["Business Logic & Services"]
+        CourseService["Curriculum Synthesis Service"]
+        LessonService["Lesson Generation Service"]
+        TTSService["Edge TTS Audio Service"]
+        YouTubeService["YouTube Data API Service"]
     end
 
-    Client -->|REST API / Bearer JWT| API
-    API -->|Prompt & JSON Schema| I
-    API <-->|Mongoose ODM| J
-    API -->|Video Discovery| K
-    API -.->|JWKS Verification| L
+    subgraph StorageLayer ["Persistence & Cloud"]
+        MongoDB[(MongoDB Atlas)]
+        Auth0Cloud["Auth0 Identity Provider"]
+        GeminiAPI["Google Gemini 2.5 Flash"]
+        YouTubeAPI["YouTube Data API v3"]
+    end
+
+    ReactApp --> Router
+    Router --> Auth0SDK
+    Auth0SDK <-->|OAuth 2.0 PKCE| Auth0Cloud
+    ReactApp --> KaTeX & CodeHighlighter & AudioEngine
+
+    ReactApp -->|HTTP REST + Bearer Token| ExpressApp
+    ExpressApp --> AuthGuard --> Validator
+    Validator --> CourseService & LessonService & TTSService & YouTubeService
+    ErrorHandler -.->|Catches Exceptions| ExpressApp
+
+    CourseService & LessonService -->|JSON Schema / Prompts| GeminiAPI
+    YouTubeService -->|Search Queries| YouTubeAPI
+    CourseService & LessonService <-->|Mongoose Models| MongoDB
 ```
 
 ---

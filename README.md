@@ -61,34 +61,41 @@ Generic AI chatbots generate unstructured, superficial walls of text without con
 ## 🏗️ System Architecture
 
 ```mermaid
-%%{init: {'theme': 'dark'}}%%
-flowchart LR
-    subgraph Client ["🖥️ Frontend Client"]
-        A["React 19 + Vite"]
-        B["KaTeX Math Engine"]
-        C["Prism Code Highlighter"]
-        D["TTS Voice Player"]
+flowchart TD
+    subgraph Client["Frontend Client (React 19 + Vite)"]
+        UI[Editorial Academic UI]
+        Router[React Router 7]
+        AuthClient[Auth0 React SDK]
+        KatexEngine[KaTeX & Markdown Pipeline]
+        LessonViewer[Lesson Viewer & Audio Player]
     end
 
-    subgraph Backend ["⚡ Backend API"]
-        E["Express.js 5 API"]
-        F["Auth0 JWT Guard"]
-        G["Curriculum Synthesizer"]
-        H["Lesson Engine"]
+    subgraph Backend["Backend API (Express 5 + Node.js)"]
+        AuthMiddleware[Auth0 JWT Bearer Middleware]
+        CourseController[Course & Module Controller]
+        LessonController[Lesson Generation Controller]
+        TTSController[TTS Audio Synthesis Controller]
     end
 
-    subgraph Cloud ["☁️ Cloud & AI Services"]
-        I["🤖 Gemini 2.5 Flash"]
-        J[("🗄️ MongoDB Atlas")]
-        K["📺 YouTube Data API"]
-        L["🔐 Auth0 Identity"]
+    subgraph External["External Cloud & AI Services"]
+        Gemini[Google Gemini 2.5 Flash]
+        YouTube[YouTube Data API v3]
+        Auth0Cloud[Auth0 Identity Cloud]
+        MongoCloud[(MongoDB Atlas)]
     end
 
-    Client -->|REST API / JWT| Backend
-    Backend -->|AI Synthesis| I
-    Backend <-->|Mongoose ODM| J
-    Backend -->|Video Query| K
-    Backend -.->|Token Verify| L
+    UI --> Router
+    Router --> AuthClient
+    AuthClient <-->|OAuth 2.0 / JWT| Auth0Cloud
+    Router --> KatexEngine --> LessonViewer
+
+    UI -->|REST + Bearer Token| Backend
+    Backend --> AuthMiddleware
+    AuthMiddleware --> CourseController & LessonController & TTSController
+
+    LessonController -->|Prompt Engineering & JSON Schema| Gemini
+    LessonController -->|Supplementary Video Discovery| YouTube
+    CourseController <-->|Mongoose Models| MongoCloud
 ```
 
 ---
