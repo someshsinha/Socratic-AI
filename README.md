@@ -62,22 +62,33 @@ Generic AI chatbots generate unstructured, superficial walls of text without con
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
-flowchart TD
-    Client["💻 Client (React 19 + Vite)\n• KaTeX LaTeX & Math Pipeline\n• Prism Syntax Highlighter & Code Controls\n• Web Audio TTS Narration Player\n• Auth0 React SDK"]
-    
-    API["⚡ REST API (Node.js + Express 5)\n• Stateless RS256 JWT Authorization\n• Curriculum & Lesson Synthesis Engine\n• YouTube Media & TTS Services"]
+flowchart LR
+    subgraph Client ["🖥️ Frontend Client"]
+        A["React 19 + Vite"]
+        B["KaTeX Math Engine"]
+        C["Prism Code Highlighter"]
+        D["TTS Voice Player"]
+    end
 
-    AI["🤖 AI Synthesis\nGoogle Gemini 2.5 Flash\n(Syllabus & Lesson Engine)"]
-    DB[("🗄️ Database\nMongoDB Atlas\n(Courses, Modules, Lessons)")]
-    YT["📺 Video Discovery\nYouTube Data API v3\n(Academic Lectures)"]
-    Auth["🔐 Identity Cloud\nAuth0 OIDC\n(OAuth 2.0 / JWT)"]
+    subgraph Backend ["⚡ Backend API"]
+        E["Express.js 5 API"]
+        F["Auth0 JWT Guard"]
+        G["Curriculum Synthesizer"]
+        H["Lesson Engine"]
+    end
 
-    Client -->|REST API + Bearer Token| API
-    Client <-->|OAuth 2.0 PKCE| Auth
-    API -->|Prompt & JSON Schema| AI
-    API <-->|Mongoose ODM| DB
-    API -->|Search Queries| YT
-    API -.->|JWKS Key Verification| Auth
+    subgraph Cloud ["☁️ Cloud & AI Services"]
+        I["🤖 Gemini 2.5 Flash"]
+        J[("🗄️ MongoDB Atlas")]
+        K["📺 YouTube Data API"]
+        L["🔐 Auth0 Identity"]
+    end
+
+    Client -->|REST API / JWT| Backend
+    Backend -->|AI Synthesis| I
+    Backend <-->|Mongoose ODM| J
+    Backend -->|Video Query| K
+    Backend -.->|Token Verify| L
 ```
 
 ---

@@ -10,22 +10,33 @@ Socratic AI is structured as a decoupled full-stack application consisting of an
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
-flowchart TD
-    Client["💻 Client Layer (React 19 + Vite)\n• KaTeX LaTeX & Math Pipeline\n• Prism Syntax Highlighter & Wrap Controls\n• Web Audio / Edge TTS Player\n• Auth0 React SDK"]
-    
-    API["⚡ API Gateway (Node.js + Express 5)\n• Stateless RS256 JWT Verification\n• Course & Lesson Controllers\n• TTS Narration & YouTube Search"]
+flowchart LR
+    subgraph Client ["🖥️ Client Layer (React 19)"]
+        A["Academic Editorial UI"]
+        B["KaTeX LaTeX Pipeline"]
+        C["Prism Syntax Highlighter"]
+        D["Edge TTS Voice Player"]
+    end
 
-    AI["🤖 Gemini AI Engine\nGoogle Gemini 2.5 Flash\n(Structured Curriculum & Lesson Synthesis)"]
-    DB[("🗄️ Persistence Layer\nMongoDB Atlas\n(Courses, Modules, Lessons)")]
-    YT["📺 Supplementary Video\nYouTube Data API v3\n(Academic Lectures)"]
-    Auth["🔐 Identity Provider\nAuth0 Cloud\n(Stateless OIDC / JWKS Verification)"]
+    subgraph API ["⚡ API Gateway (Express 5)"]
+        E["Express REST API"]
+        F["Auth0 RS256 Guard"]
+        G["Curriculum Synthesizer"]
+        H["Lesson Engine"]
+    end
 
-    Client -->|REST API + Bearer Token| API
-    Client <-->|OAuth 2.0 PKCE| Auth
-    API -->|Prompt & JSON Schema| AI
-    API <-->|Mongoose ODM| DB
-    API -->|Video Discovery| YT
-    API -.->|JWKS Key Verification| Auth
+    subgraph Cloud ["☁️ Cloud & AI Services"]
+        I["🤖 Google Gemini 2.5 Flash"]
+        J[("🗄️ MongoDB Atlas")]
+        K["📺 YouTube Data API v3"]
+        L["🔐 Auth0 Identity Cloud"]
+    end
+
+    Client -->|REST API / Bearer JWT| API
+    API -->|Prompt & JSON Schema| I
+    API <-->|Mongoose ODM| J
+    API -->|Video Discovery| K
+    API -.->|JWKS Verification| L
 ```
 
 ---
