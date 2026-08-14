@@ -61,6 +61,7 @@ Generic AI chatbots generate unstructured, superficial walls of text without con
 ## 🏗️ System Architecture
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart TD
     subgraph Client["Frontend Client (React 19 + Vite)"]
         UI[Editorial Academic UI]
@@ -119,6 +120,7 @@ flowchart TD
 ## 📊 Data Models & Schema Design
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 erDiagram
     COURSE ||--o{ MODULE : contains
     MODULE ||--o{ LESSON : contains

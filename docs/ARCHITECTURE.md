@@ -9,6 +9,7 @@ This document provides a comprehensive technical overview of **Socratic AI**, co
 Socratic AI is structured as a decoupled full-stack application consisting of an **Editorial Single-Page Application (SPA)** on the frontend and an **Asynchronous RESTful Microservice** on the backend, integrated with external LLM engines, identity providers, and media APIs.
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 graph TB
     subgraph ClientLayer ["Client Layer (Browser)"]
         ReactApp["React 19 SPA (Vite)"]
@@ -63,6 +64,7 @@ graph TB
 When a user submits a subject query (e.g. *"Distributed Systems"*):
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 sequenceDiagram
     autonumber
     actor User
@@ -88,6 +90,7 @@ sequenceDiagram
 Lessons are generated and cached on-demand with first-principles structure:
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 sequenceDiagram
     autonumber
     actor User
@@ -130,6 +133,7 @@ LLM outputs often alternate unpredictably between:
 Socratic AI implements a multi-pass normalization pipeline prior to feeding content into `react-markdown`:
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart LR
     RawInput[Raw AI Output] --> RegexFilter[Math Normalization Filter]
     RegexFilter --> MathDelimiters[Inject $...$ / $$...$$ Delimiters]
@@ -159,6 +163,7 @@ To accommodate auditory and multimodal learners, Socratic AI includes an AI-driv
 Socratic AI enforces zero-trust stateless authorization using **Auth0** and standard OAuth 2.0 / OIDC specifications.
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart TD
     subgraph AuthFlow ["Authentication Flow"]
         UserLogin[User Clicks 'Start Learning' / 'Courses'] --> SaveDest[Save Destination to sessionStorage]
