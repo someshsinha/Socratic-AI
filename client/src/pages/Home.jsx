@@ -166,7 +166,7 @@ function WorkspacePanel() {
                         {mod.title}
                       </h4>
                       <span style={{ fontSize: '0.68rem', color: T.muted }}>
-                        {mod.count} lessons • {mod.duration}
+                        {mod.count} structured lessons
                       </span>
                     </div>
                   </div>
@@ -201,9 +201,6 @@ function WorkspacePanel() {
                             }}
                           >
                             {lesson.tag}
-                          </span>
-                          <span style={{ fontSize: '0.68rem', color: T.muted, fontFamily: 'ui-monospace,monospace', whiteSpace: 'nowrap' }}>
-                            {lesson.time}
                           </span>
                         </div>
                       </div>

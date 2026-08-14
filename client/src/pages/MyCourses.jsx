@@ -569,16 +569,16 @@ export default function MyCourses() {
             </div>
           </div>
 
-          {/* Stat 4: Learning Time */}
+          {/* Stat 4: LaTeX Enabled */}
           <div className="flex items-center gap-4 p-5 sm:p-6">
             <div className="w-11 h-11 flex items-center justify-center shrink-0" style={{ border: `1px solid ${T.line}`, background: T.paper }}>
               <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
             <div>
-              <p style={{ fontSize: '1.45rem', fontWeight: 900, color: T.ink, lineHeight: 1, margin: 0 }}>~{totalLearningHours}h</p>
-              <p style={{ fontSize: '0.74rem', color: T.muted, margin: '4px 0 0' }}>Learning Time</p>
+              <p style={{ fontSize: '1.45rem', fontWeight: 900, color: T.ink, lineHeight: 1, margin: 0 }}>100%</p>
+              <p style={{ fontSize: '0.74rem', color: T.muted, margin: '4px 0 0' }}>LaTeX & Math Notes</p>
             </div>
           </div>
         </div>

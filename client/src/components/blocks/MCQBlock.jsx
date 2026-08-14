@@ -12,30 +12,30 @@ export default function MCQBlock({ question, options, answer, explanation }) {
 
   return (
     <>
-      {/* Interactive UI - hidden during print */}
-      <div className="print:hidden p-6 bg-slate-850 border border-slate-800 rounded-2xl space-y-4 shadow-sm">
+      {/* Interactive UI */}
+      <div className="print:hidden p-6 bg-white border border-[#d8d3c7] space-y-4 my-6">
         {/* Header Badge */}
-        <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/15 w-max block">
-          Knowledge Check
+        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#2f6f4f] block">
+          [KNOWLEDGE CHECK // ASSESSMENT]
         </span>
 
         {/* Question Text */}
-        <h4 className="font-bold text-white text-base leading-relaxed">
+        <h4 className="font-extrabold text-[#111827] text-base leading-relaxed m-0">
           {question}
         </h4>
 
         {/* Options List */}
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-1 gap-2.5 pt-1">
           {options.map((option, optIdx) => {
-            let btnStyle = 'bg-slate-900 border-slate-800 text-slate-350 hover:bg-slate-800/40 hover:border-slate-700';
+            let btnStyle = 'bg-[#fbfaf6] border-[#d8d3c7] text-[#111827] hover:bg-white hover:border-[#111827]';
 
             if (hasAnswered) {
               if (optIdx === answer) {
-                btnStyle = 'bg-emerald-500/10 border-emerald-500/35 text-emerald-350 font-bold';
+                btnStyle = 'bg-emerald-50 border-emerald-600 text-emerald-950 font-bold';
               } else if (selectedOption === optIdx) {
-                btnStyle = 'bg-red-500/10 border-red-500/35 text-red-350';
+                btnStyle = 'bg-red-50 border-red-500 text-red-950';
               } else {
-                btnStyle = 'bg-slate-900 border-slate-800 text-slate-550 opacity-60';
+                btnStyle = 'bg-[#fbfaf6] border-[#e5e7eb] text-gray-400 opacity-60';
               }
             }
 
@@ -44,8 +44,11 @@ export default function MCQBlock({ question, options, answer, explanation }) {
                 key={optIdx}
                 disabled={hasAnswered}
                 onClick={() => handleSelect(optIdx)}
-                className={`px-4 py-3 border rounded-xl text-left text-sm transition-all duration-200 cursor-pointer ${btnStyle}`}
+                className={`px-4 py-3 border text-left text-sm transition-all cursor-pointer font-medium ${btnStyle}`}
               >
+                <span className="font-mono font-bold mr-2 text-xs text-gray-500">
+                  [{String.fromCharCode(65 + optIdx)}]
+                </span>
                 {option}
               </button>
             );
@@ -55,38 +58,32 @@ export default function MCQBlock({ question, options, answer, explanation }) {
         {/* Feedback Explanation Card */}
         {hasAnswered && (
           <div
-            className={`p-4 rounded-xl text-xs sm:text-sm leading-relaxed border ${
+            className={`p-4 border text-xs sm:text-sm leading-relaxed ${
               isCorrect
-                ? 'bg-emerald-950/20 border-emerald-500/15 text-emerald-300'
-                : 'bg-red-950/20 border-red-500/15 text-red-350'
+                ? 'bg-emerald-50 border-emerald-500 text-emerald-900'
+                : 'bg-red-50 border-red-500 text-red-900'
             }`}
           >
-            <p className="font-bold mb-1">{isCorrect ? '✓ Correct!' : '✗ Incorrect'}</p>
-            <p>{explanation}</p>
+            <p className="font-extrabold mb-1">{isCorrect ? '✓ Correct Answer' : '✗ Incorrect'}</p>
+            <p className="m-0 text-xs sm:text-sm">{explanation}</p>
           </div>
         )}
       </div>
 
-      {/* Static Print UI - only visible during print */}
-      <div className="hidden print:block knowledge-check-print-card my-4 p-4">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 block mb-1">
-          Knowledge Check
-        </span>
-        <h4 className="font-bold text-black text-sm mb-3">
-          {question}
-        </h4>
-        <ul className="list-decimal list-inside text-xs space-y-1.5 text-slate-800 pl-1">
-          {options.map((option, optIdx) => (
-            <li key={optIdx} className={optIdx === answer ? "font-bold text-emerald-700" : ""}>
-              {option} {optIdx === answer && "✓ (Correct Answer)"}
+      {/* Static Print UI */}
+      <div className="hidden print:block p-4 border border-slate-300 rounded-lg my-4 space-y-2">
+        <p className="font-bold text-sm text-slate-900">Q: {question}</p>
+        <ul className="list-disc list-inside text-xs text-slate-700 space-y-1">
+          {options.map((opt, i) => (
+            <li key={i} className={i === answer ? 'font-bold text-slate-950' : ''}>
+              {opt} {i === answer && '✓ (Correct)'}
             </li>
           ))}
         </ul>
         {explanation && (
-          <div className="mt-3 p-3 bg-slate-100 border border-slate-200 rounded-lg text-xs text-slate-700">
-            <p className="font-bold text-black mb-1">Explanation:</p>
-            <p>{explanation}</p>
-          </div>
+          <p className="text-[11px] text-slate-600 italic mt-2">
+            Explanation: {explanation}
+          </p>
         )}
       </div>
     </>

@@ -66,7 +66,7 @@ Google Fonts `@import url(...)` declarations were placed after Tailwind CSS `@ta
 
 ### Resolution Steps
 1. Removed `@import` from `client/src/index.css`.
-3. Re-verified Vite build with `npx vite build` (zero errors).
+2. Re-verified Vite build with `npx vite build` (zero errors).
 
 ---
 
@@ -98,3 +98,28 @@ Auth0 authorize URL contained: `redirect_uri=http%3A%2F%2Flocalhost%3A5174`.
    - Requests now originate from `http://localhost:5173`, perfectly matching Auth0 dashboard credentials.
 
 ---
+
+## Incident #004: YouTube API Rate Limit & Broken Embed Iframe Handling
+
+### Metadata
+- **Date**: August 14, 2026
+- **Component**: Supplemental Video Renderer (`client/src/components/blocks/VideoBlock.jsx`)
+- **Status**: ✅ Resolved
+
+### Error Symptoms
+When repeated development searches hit the YouTube Data API v3 quota (`quotaExceeded` / HTTP 403) or when video streams were blocked, the lesson renderer previously broke the page visual flow or displayed an empty grey rectangle.
+
+### Root Cause
+1. YouTube Data API v3 free tier enforces daily quota limits (10,000 units/day). Rapid test requests during curriculum generation exhaust the API quota.
+2. If the backend returned an error or empty `videoId`, the component fell back to an unformatted error box that disrupted the reading layout and broke the standard 16:9 player proportions.
+
+### Resolution Steps
+1. **Preserved 16:9 Aspect Ratio Frame (`VideoBlock.jsx`)**:
+   - Guaranteed the video container maintains its exact `aspect-video w-full` dimensions across all states (loading, ready, error, rate-limited) without shifting the surrounding textbook layout.
+2. **Branded Academic Fallback Component**:
+   - Replaced raw browser errors with a branded 16:9 container featuring:
+     - Centered video/play badge.
+     - "Video temporarily unavailable" status notice with recommended topic label.
+     - Direct `[ WATCH ON YOUTUBE ↗ ]` action opening the topic query on YouTube.
+3. **Zero Layout Shift**:
+   - Preserved identical margin and padding hierarchy matching the surrounding editorial design.

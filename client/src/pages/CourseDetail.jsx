@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 /* ────────────────────────────────────────────────────────
-   DESIGN TOKENS (Exact Landing Page template)
+   DESIGN TOKENS (Socratic AI Editorial Template)
 ──────────────────────────────────────────────────────── */
 const T = {
   ink:   '#111827',
@@ -15,14 +15,72 @@ const T = {
   accent: '#315f88',
 };
 
+// Helper to determine subject-accurate course category
+function getCourseCategory(course) {
+  if (!course) return '[ACADEMIC // CURRICULUM]';
+  
+  if (Array.isArray(course.tags) && course.tags.length > 0) {
+    const validTags = course.tags.filter(t => t && t.trim() && !t.startsWith('[') && t.toLowerCase() !== 'cs');
+    if (validTags.length >= 2) {
+      return `[${validTags[0].toUpperCase()} // ${validTags[1].toUpperCase()}]`;
+    }
+    if (validTags.length === 1) {
+      const tag = validTags[0].toUpperCase();
+      return tag.startsWith('[') ? tag : `[${tag}]`;
+    }
+  }
+
+  const text = `${course.title || ''} ${course.description || ''}`.toLowerCase();
+  
+  if (text.includes('kashmir') || text.includes('hindu') || text.includes('exodus') || text.includes('gita') || text.includes('vedic')) {
+    return '[HISTORY // SOUTH ASIA]';
+  }
+  if (text.includes('trump') || text.includes('presidency') || text.includes('america') || text.includes('revolution')) {
+    return '[HISTORY // AMERICAN STUDIES]';
+  }
+  if (text.includes('jesus') || text.includes('theology') || text.includes('bible') || text.includes('religion')) {
+    return '[HISTORY // THEOLOGY]';
+  }
+  if (text.includes('history') || text.includes('ancient') || text.includes('medieval') || text.includes('civilization')) {
+    return '[HISTORY]';
+  }
+  if (text.includes('quantum') || text.includes('physics') || text.includes('mechanics') || text.includes('optics') || text.includes('tensor')) {
+    return '[PHYSICS // QUANTUM MECHANICS]';
+  }
+  if (text.includes('distributed') || text.includes('consensus') || text.includes('kubernetes') || text.includes('docker') || text.includes('cloud') || text.includes('kernel') || text.includes('operating system')) {
+    return '[COMPUTER SCIENCE // DISTRIBUTED SYSTEMS]';
+  }
+  if (text.includes('algorithm') || text.includes('dynamic programming') || text.includes('data structure') || text.includes('compiler') || text.includes('tree')) {
+    return '[COMPUTER SCIENCE // ALGORITHMS]';
+  }
+  if (text.includes('microeconomic') || text.includes('macroeconomic') || text.includes('economy') || text.includes('finance')) {
+    return '[ECONOMICS // MICROECONOMIC THEORY]';
+  }
+  if (text.includes('goggins') || text.includes('mental lab') || text.includes('mindset') || text.includes('discipline')) {
+    return '[PERSONAL DEVELOPMENT // PSYCHOLOGY]';
+  }
+  if (text.includes('media') || text.includes('culture') || text.includes('feminism') || text.includes('film')) {
+    return '[MEDIA STUDIES // CULTURE]';
+  }
+  if (text.includes('system design') || text.includes('architecture')) {
+    return '[COMPUTER SCIENCE // SYSTEM ARCHITECTURE]';
+  }
+  if (text.includes('react') || text.includes('javascript') || text.includes('web')) {
+    return '[COMPUTER SCIENCE // WEB ENGINEERING]';
+  }
+  
+  return '[ACADEMIC // CURRICULUM]';
+}
+
 export default function CourseDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Track open/collapsed state for each module
-  const [expanded, setExpanded] = useState({});
+  // Track open/collapsed state: Module 1 expanded by default
+  const [expanded, setExpanded] = useState({ 0: true });
 
   const fetchCourse = async () => {
     try {
@@ -31,15 +89,8 @@ export default function CourseDetail() {
       const response = await api.get(`/courses/${id}`);
       const courseData = response.data?.data;
       setCourse(courseData);
-
-      // Default: expand first two modules
-      if (courseData?.modules?.length > 0) {
-        const initialOpen = {};
-        courseData.modules.forEach((mod, idx) => {
-          if (idx < 2) initialOpen[idx] = true;
-        });
-        setExpanded(initialOpen);
-      }
+      // Default: only Module 1 expanded
+      setExpanded({ 0: true });
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || err.message || 'Failed to load course details');
@@ -100,9 +151,10 @@ export default function CourseDetail() {
     );
   }
 
+  const totalModules = course.modules?.length || 0;
   const totalLessons = course.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
-  const estimatedHours = Math.max(1, Math.round(totalLessons * 15 / 60));
-  const categoryTag = course.tags?.[0] ? `[CS // ${course.tags[0].toUpperCase()}]` : '[CS // DISTRIBUTED SYSTEMS]';
+  const categoryLabel = getCourseCategory(course);
+  const firstLessonId = course.modules?.[0]?.lessons?.[0]?._id;
 
   return (
     <div style={{ background: 'transparent', minHeight: '100vh', color: T.ink }}>
@@ -127,12 +179,12 @@ export default function CourseDetail() {
         </div>
 
         {/* ── 2-Column Responsive Grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           
-          {/* ════════ LEFT COLUMN (Overview, Badges & Actions) ════════ */}
+          {/* ════════ LEFT COLUMN (Course Overview & Clear Actions) ════════ */}
           <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
             <div>
-              {/* Eyebrow in Green Monospace */}
+              {/* 1. Category label above title */}
               <p
                 style={{
                   fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
@@ -144,37 +196,37 @@ export default function CourseDetail() {
                   margin: '0 0 10px',
                 }}
               >
-                Socratic-AI v0.1 // Course Overview
+                {categoryLabel}
               </p>
 
-              {/* Main H1 Title with Period */}
+              {/* 2. Course Title */}
               <h1
                 style={{
                   fontSize: 'clamp(2.3rem, 4.5vw, 3.4rem)',
                   fontWeight: 900,
                   letterSpacing: '-0.02em',
-                  lineHeight: 1.06,
+                  lineHeight: 1.08,
                   color: T.ink,
                   margin: '0 0 14px',
                 }}
               >
-                {course.title}.
+                {course.title.endsWith('.') ? course.title : `${course.title}.`}
               </h1>
 
-              {/* Subtitle */}
+              {/* 3. Real Course Description */}
               <p
                 style={{
-                  fontSize: '0.96rem',
+                  fontSize: '0.94rem',
                   color: '#4b5563',
                   lineHeight: 1.65,
                   margin: '0 0 20px',
                 }}
               >
-                {course.description || 'Understand how modern systems communicate, replicate, and reach consensus in the presence of failures.'}
+                {course.description || `A complete structured academic curriculum covering the principles, core topics, and analysis of ${course.title}.`}
               </p>
 
-              {/* Square Scope Badges */}
-              <div className="flex flex-wrap items-center gap-2">
+              {/* 4. Metadata Chips (Pure scope metrics, no time estimations) */}
+              <div className="flex flex-wrap items-center gap-2 mb-7">
                 <span
                   style={{
                     fontFamily: 'ui-monospace,monospace',
@@ -186,7 +238,7 @@ export default function CourseDetail() {
                     color: T.ink,
                   }}
                 >
-                  [{course.modules?.length || 0} MODULES]
+                  [{totalModules} MODULES]
                 </span>
                 <span
                   style={{
@@ -201,140 +253,106 @@ export default function CourseDetail() {
                 >
                   [{totalLessons} LESSONS]
                 </span>
-                <span
-                  style={{
-                    fontFamily: 'ui-monospace,monospace',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    padding: '4px 10px',
-                    border: `1px solid ${T.line}`,
-                    background: T.panel,
-                    color: T.ink,
-                  }}
-                >
-                  [~{estimatedHours}H TOTAL]
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'ui-monospace,monospace',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    padding: '4px 10px',
-                    border: `1px solid ${T.ink}`,
-                    background: T.ink,
-                    color: '#ffffff',
-                  }}
-                >
-                  {categoryTag}
-                </span>
               </div>
-            </div>
 
-            {/* AI Summary Box & Actions Card */}
-            <div
-              className="card-hover-lift p-6 space-y-4"
-              style={{
-                border: `1px solid ${T.line}`,
-                background: T.panel,
-              }}
-            >
-              <p style={{ fontSize: '0.86rem', color: '#4b5563', lineHeight: 1.6, margin: 0 }}>
-                This is your complete AI-generated curriculum for <strong>{course.title}</strong>. It covers fundamental theory, architecture patterns, and first-principles mathematical rigor.
-              </p>
-
-              <div className="space-y-2.5 pt-2">
-                {/* Generate Final LaTeX PDF Button */}
-                <button
-                  onClick={() => alert('LaTeX PDF generated for this course.')}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '11px 16px',
-                    border: `1px solid ${T.ink}`,
-                    background: T.panel,
-                    fontSize: '0.8rem',
-                    fontWeight: 750,
-                    color: T.ink,
-                    cursor: 'pointer',
-                    fontFamily: 'ui-monospace,monospace',
-                    letterSpacing: '0.03em',
-                  }}
-                  className="hover:bg-[#fbfaf6] transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span>[GENERATE FINAL LATEX PDF]</span>
-                  </div>
-                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 border border-[#d8d3c7] bg-[#fbfaf6] text-gray-700">
-                    PDF
-                  </span>
-                </button>
-
-                {/* Listen in Hinglish Audio Button */}
+              {/* 5. Course Actions Stack */}
+              <div className="space-y-3">
+                {/* PRIMARY CTA: START / CONTINUE COURSE */}
                 <button
                   onClick={() => {
-                    const firstLesson = course.modules?.[0]?.lessons?.[0];
-                    if (firstLesson?._id) {
-                      window.location.href = `/lesson/${firstLesson._id}`;
+                    if (firstLessonId) {
+                      navigate(`/lesson/${firstLessonId}`);
                     }
                   }}
                   style={{
                     width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '11px 16px',
+                    padding: '13px 20px',
                     border: `1px solid ${T.ink}`,
                     background: T.ink,
                     color: '#ffffff',
-                    fontSize: '0.8rem',
-                    fontWeight: 750,
+                    fontSize: '0.85rem',
+                    fontWeight: 800,
                     cursor: 'pointer',
                     fontFamily: 'ui-monospace,monospace',
-                    letterSpacing: '0.03em',
+                    letterSpacing: '0.04em',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
                   }}
-                  className="hover:-translate-y-px active:translate-y-0 transition-transform"
+                  className="hover:-translate-y-px active:translate-y-0 transition-transform shadow-sm"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
-                    </svg>
-                    <span>[LISTEN IN HINGLISH AUDIO]</span>
-                  </div>
-                  <span className="flex items-center gap-0.5 text-white">
-                    <span className="w-0.5 h-3 bg-white rounded-full animate-bounce" />
-                    <span className="w-0.5 h-4 bg-white rounded-full animate-bounce [animation-delay:0.1s]" />
-                    <span className="w-0.5 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]" />
-                  </span>
+                  [ START COURSE → ]
                 </button>
-              </div>
-            </div>
 
-            {/* Isometric Mathematical Node SVG Graphic */}
-            <div className="hidden lg:flex justify-center pt-2 select-none opacity-80">
-              <svg width="220" height="140" viewBox="0 0 220 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M110 70L50 40M110 70L170 40M110 70L110 115M50 40L50 85M170 40L170 85" stroke="#d8d3c7" strokeWidth="1.2" strokeDasharray="3 3" />
-                <polygon points="110,45 140,60 110,75 80,60" fill="#fbfaf6" stroke="#111827" strokeWidth="1.5" />
-                <polygon points="80,60 110,75 110,105 80,90" fill="#e5e7eb" stroke="#111827" strokeWidth="1.5" />
-                <polygon points="140,60 110,75 110,105 140,90" fill="#d1d5db" stroke="#111827" strokeWidth="1.5" />
-                <polygon points="50,25 68,35 50,45 32,35" fill="#fbfaf6" stroke="#5f6673" strokeWidth="1.2" />
-                <polygon points="32,35 50,45 50,63 32,53" fill="#e5e7eb" stroke="#5f6673" strokeWidth="1.2" />
-                <polygon points="68,35 50,45 50,63 68,53" fill="#d1d5db" stroke="#5f6673" strokeWidth="1.2" />
-                <polygon points="170,25 188,35 170,45 152,35" fill="#fbfaf6" stroke="#5f6673" strokeWidth="1.2" />
-                <polygon points="152,35 170,45 170,63 152,53" fill="#e5e7eb" stroke="#5f6673" strokeWidth="1.2" />
-                <polygon points="188,35 170,45 170,63 188,53" fill="#d1d5db" stroke="#5f6673" strokeWidth="1.2" />
-              </svg>
+                {/* SECONDARY ACTIONS: LaTeX PDF & Audio Utilities */}
+                <div className="space-y-2 pt-1">
+                  <button
+                    onClick={() => alert('LaTeX PDF compiled for this course.')}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '10px 14px',
+                      border: `1px solid ${T.line}`,
+                      background: T.panel,
+                      fontSize: '0.76rem',
+                      fontWeight: 700,
+                      color: T.ink,
+                      cursor: 'pointer',
+                      fontFamily: 'ui-monospace,monospace',
+                    }}
+                    className="hover:border-gray-900 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span>Generate Final LaTeX PDF</span>
+                    </div>
+                    <span className="text-[10px] text-gray-500 font-mono">PDF</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (firstLessonId) {
+                        navigate(`/lesson/${firstLessonId}`);
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '10px 14px',
+                      border: `1px solid ${T.line}`,
+                      background: T.panel,
+                      fontSize: '0.76rem',
+                      fontWeight: 700,
+                      color: T.ink,
+                      cursor: 'pointer',
+                      fontFamily: 'ui-monospace,monospace',
+                    }}
+                    className="hover:border-gray-900 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
+                      </svg>
+                      <span>Listen to Audio Narration</span>
+                    </div>
+                    <span className="text-[10px] text-indigo-600 font-mono">AUDIO</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* ════════ RIGHT COLUMN (Curriculum Modules Outline) ════════ */}
+          {/* ════════ RIGHT COLUMN (Curriculum Modules Accordion) ════════ */}
           <div className="lg:col-span-7 space-y-4">
             
-            {/* Outline Card Container (Matching WorkspacePanel from Landing Page) */}
+            {/* Outline Card Container */}
             <div
               className="card-hover-lift"
               style={{
@@ -342,7 +360,7 @@ export default function CourseDetail() {
                 background: T.panel,
               }}
             >
-              {/* Header Bar with 3 Window Dots & Actions */}
+              {/* Header Bar with subtle [CURRICULUM // MODULES] & Expand/Collapse */}
               <div
                 className="px-5 py-3.5 flex items-center justify-between"
                 style={{
@@ -365,11 +383,11 @@ export default function CourseDetail() {
                       letterSpacing: '0.04em',
                     }}
                   >
-                    [CURRICULUM_ENGINE // STRUCTURED_MODULES]
+                    [CURRICULUM // MODULES]
                   </span>
                 </div>
 
-                {/* Expand / Collapse All */}
+                {/* Subtle Expand All / Collapse All with Icons */}
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleExpandAll}
@@ -381,10 +399,16 @@ export default function CourseDetail() {
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
                     }}
                     className="hover:text-gray-950"
                   >
-                    [EXPAND ALL]
+                    <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                    Expand All
                   </button>
                   <span style={{ color: T.line }}>|</span>
                   <button
@@ -397,10 +421,16 @@ export default function CourseDetail() {
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
                     }}
                     className="hover:text-gray-950"
                   >
-                    [COLLAPSE ALL]
+                    <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
+                    </svg>
+                    Collapse All
                   </button>
                 </div>
               </div>
@@ -415,7 +445,6 @@ export default function CourseDetail() {
                   course.modules.map((mod, modIdx) => {
                     const isOpen = !!expanded[modIdx];
                     const lessonCount = mod.lessons?.length || 0;
-                    const estimatedModTime = lessonCount * 12;
 
                     return (
                       <div key={mod._id || modIdx}>
@@ -460,12 +489,12 @@ export default function CourseDetail() {
                                 {mod.title || `Module ${modIdx + 1}`}
                               </h3>
                               <p style={{ fontSize: '0.74rem', color: T.muted, margin: 0, fontFamily: 'ui-monospace,monospace' }}>
-                                {lessonCount} lessons • ~{estimatedModTime}m
+                                {lessonCount} Lessons
                               </p>
                             </div>
                           </div>
 
-                          {/* Chevron icon */}
+                          {/* Subtle Chevron indicator */}
                           <div
                             style={{
                               width: 26,
@@ -490,7 +519,7 @@ export default function CourseDetail() {
                           </div>
                         </button>
 
-                        {/* Sub-lessons list */}
+                        {/* Sub-lessons list: Pure & Clean without noise */}
                         {isOpen && (
                           <div className="px-5 pb-4 pt-1 space-y-2" style={{ background: 'rgba(251,250,246,0.75)' }}>
                             {mod.lessons && mod.lessons.length > 0 ? (
@@ -529,29 +558,13 @@ export default function CourseDetail() {
                                     </span>
                                   </div>
 
-                                  <div className="flex items-center gap-2.5 shrink-0">
-                                    {lesson.isEnriched && (
-                                      <span
-                                        style={{
-                                          fontFamily: 'ui-monospace,monospace',
-                                          fontSize: '0.64rem',
-                                          fontWeight: 700,
-                                          padding: '1px 6px',
-                                          border: `1px solid ${T.line}`,
-                                          color: T.green,
-                                          background: T.paper,
-                                          whiteSpace: 'nowrap',
-                                        }}
-                                      >
-                                        [✓ ENRICHED]
-                                      </span>
-                                    )}
+                                  <div className="flex items-center gap-2 shrink-0">
                                     <span
                                       style={{
                                         fontFamily: 'ui-monospace,monospace',
                                         fontSize: '0.74rem',
                                         fontWeight: 800,
-                                        color: T.accent,
+                                        color: T.ink,
                                         whiteSpace: 'nowrap',
                                       }}
                                       className="group-hover:translate-x-0.5 transition-transform"
@@ -574,7 +587,7 @@ export default function CourseDetail() {
                 )}
               </div>
 
-              {/* Bottom Live Status Strip */}
+              {/* Bottom Subtle Status Strip */}
               <div
                 className="px-5 py-3 flex items-center justify-between"
                 style={{
@@ -585,7 +598,7 @@ export default function CourseDetail() {
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="w-2 h-2 rounded-full animate-soft-pulse shrink-0" style={{ background: T.accent }} />
                   <span style={{ fontSize: '0.72rem', color: T.muted, fontStyle: 'italic', fontFamily: 'ui-monospace,monospace' }} className="truncate">
-                    Interactive curriculum loaded from database
+                    Structured academic curriculum
                   </span>
                 </div>
                 <span
@@ -599,7 +612,7 @@ export default function CourseDetail() {
                   }}
                   className="shrink-0"
                 >
-                  100% LATEX & MCQ
+                  100% LATEX READY
                 </span>
               </div>
             </div>

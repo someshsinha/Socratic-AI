@@ -11,40 +11,49 @@ export default function CodeBlock({ text, language }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy text', err);
+      console.error('Failed to copy code', err);
     }
   };
 
   return (
-    <div className="relative group rounded-xl overflow-hidden border border-slate-850 shadow-md my-4">
-      {/* Code Header Bar - hidden during print */}
-      <div className="print:hidden bg-slate-900 px-4 py-2 flex items-center justify-between text-xs text-slate-400 border-b border-slate-850">
-        <span className="font-semibold uppercase tracking-wider text-[10px] text-slate-500">
-          {language || 'code'}
+    <div className="relative border border-[#d8d3c7] my-6 shadow-sm overflow-hidden bg-[#111827]">
+      {/* Code Header Bar */}
+      <div className="print:hidden bg-[#1f2937] px-4 py-2 flex items-center justify-between border-b border-[#374151]">
+        <span className="font-mono font-bold uppercase tracking-wider text-[11px] text-[#9ca3af]">
+          {language || 'CODE'}
         </span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 hover:text-white transition duration-150 cursor-pointer"
+          className="font-mono text-xs font-bold text-gray-300 hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
         >
           {copied ? (
-            <span className="text-emerald-400 font-bold">Copied!</span>
+            <span className="text-emerald-400">✓ [COPIED]</span>
           ) : (
-            <span>Copy</span>
+            <span>[ COPY ]</span>
           )}
         </button>
       </div>
 
-      {/* Code Area with Syntax Highlighting */}
-      <div className="print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300 print:rounded-xl">
+      {/* Code Area with Syntax Highlighting & Line Numbers */}
+      <div className="print:bg-white print:text-black">
         <SyntaxHighlighter
           language={language ? language.toLowerCase() : 'javascript'}
           style={tomorrow}
+          showLineNumbers={true}
           customStyle={{
             margin: 0,
-            padding: '1.25rem',
-            background: '#030712',
-            fontSize: '0.8rem',
-            lineHeight: '1.5',
+            padding: '1rem 1.25rem',
+            background: '#111827',
+            fontSize: '0.84rem',
+            lineHeight: '1.6',
+            fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
+          }}
+          lineNumberStyle={{
+            color: '#4b5563',
+            minWidth: '2.5em',
+            paddingRight: '1em',
+            textAlign: 'right',
+            userSelect: 'none',
           }}
         >
           {text}

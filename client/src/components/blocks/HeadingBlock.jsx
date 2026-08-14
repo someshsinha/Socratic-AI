@@ -6,7 +6,7 @@ import rehypeKatex from 'rehype-katex';
 
 export default function HeadingBlock({ text }) {
   return (
-    <h2 className="text-xl font-bold text-white pt-4 mt-6 first:mt-0 leading-tight">
+    <h2 className="text-xl sm:text-2xl font-extrabold text-[#111827] pt-4 mt-8 first:mt-0 leading-tight tracking-tight border-b border-[#e5e7eb] pb-2">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, [remarkMath, { singleDollar: true }]]}
         rehypePlugins={[rehypeKatex]}
