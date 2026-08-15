@@ -269,5 +269,29 @@ On mobile screens, code blocks displayed clipped lines on long comments/statemen
 3. **Smooth Touch Scrolling**: Enabled `-webkit-overflow-scrolling: touch` and added dark custom scrollbar styles in `index.css`.
 4. **Mobile Lesson Table of Contents (`LessonViewer.jsx`)**: Added a collapsible accordion `[ TOC // N SECTIONS ▾ ]` at the top of lessons on mobile viewports, enabling single-tap section jumping.
 
+---
+
+## Incident #011: Course Data Scoping & Unauthorized Deletion Vulnerability
+
+### Metadata
+- **Date**: August 15, 2026
+- **Component**: Course Controller (`server/controllers/course.controller.js`), Course Routes (`server/routes/course.routes.js`), Model (`server/models/Course.js`)
+- **Status**: ✅ Resolved
+
+### Error Symptoms
+1. An unauthenticated `GET /api/courses` endpoint existed that returned all courses across all users without ownership scoping.
+2. The `DELETE /api/courses/:id` endpoint used `checkJwtOptional` and did not verify whether the authenticated user owned the course, allowing arbitrary deletion of any course by ID.
+3. The `Course` schema retained a legacy development default (`creator: 'dev-temp-creator'`).
+
+### Root Cause
+- Leftover scaffolding routes from early phase testing before multi-tenant Auth0 integration were still accessible in production.
+
+### Resolution Steps
+1. **Removed Unscoped GET Route**: Deleted the `GET /api/courses` route and controller; all user course queries now flow exclusively through the authenticated, creator-scoped `GET /api/courses/user-courses` endpoint.
+2. **Enforced Required JWT on Deletion**: Switched `DELETE /api/courses/:id` route middleware from `checkJwtOptional` to `checkJwt` (rejecting anonymous requests with `401 Unauthorized`).
+3. **Owner Verification in Controller**: Added strict ownership validation (`requesterId === course.creator`) returning `403 Forbidden` if a user attempts to delete a course they did not create.
+4. **Schema Cleanup**: Removed `dev-temp-creator` default in `Course.js` and set indexed `creator` field with fallback to `'guest'` for unauthenticated public generations.
+
+
 
 

@@ -3,18 +3,6 @@ import Module from '../models/Module.js';
 import Lesson from '../models/Lesson.js';
 import { generateCoursePrompt } from '../services/aiService.js';
 
-export const getCourses = async (req, res, next) => {
-  try {
-    const courses = await Course.find({}).populate({
-      path: 'modules',
-      populate: { path: 'lessons', select: 'title isEnriched' },
-    });
-    res.json({ success: true, data: courses });
-  } catch (err) {
-    next(err);
-  }
-};
-
 export const getCourseById = async (req, res, next) => {
   try {
     const course = await Course.findById(req.params.id).populate({
@@ -58,12 +46,12 @@ export const createCourse = async (req, res, next) => {
     const courseTags = Array.isArray(aiData.tags) ? aiData.tags : [];
     const courseModules = Array.isArray(aiData.modules) ? aiData.modules : [];
 
-    // 2. Create the root Course document
+    // 2. Create the root Course document with authenticated user sub or 'guest'
     const newCourse = await Course.create({
       title: courseTitle,
       description: courseDescription,
       tags: courseTags,
-      creator: req.auth?.payload?.sub || req.user?.sub || req.user?._id || req.body.creator || 'dev-temp-creator',
+      creator: req.auth?.payload?.sub || req.user?.sub || 'guest',
     });
 
     // 3. Create Modules and empty Lesson placeholders
@@ -117,7 +105,7 @@ export const createCourse = async (req, res, next) => {
 
 export const getUserCourses = async (req, res, next) => {
   try {
-    const creator = req.auth?.payload?.sub;
+    const creator = req.auth?.payload?.sub || req.user?.sub;
     if (!creator) {
       return res.status(401).json({ success: false, error: 'Unauthorized: Missing subject' });
     }
@@ -139,6 +127,15 @@ export const deleteCourse = async (req, res, next) => {
     const course = await Course.findById(id);
     if (!course) {
       return res.status(404).json({ success: false, error: 'Course not found' });
+    }
+
+    // Security Check: Enforce that the requester is the course creator
+    const requesterId = req.auth?.payload?.sub || req.user?.sub;
+    if (!requesterId || course.creator !== requesterId) {
+      return res.status(403).json({
+        success: false,
+        error: 'Forbidden: You are not authorized to delete this course',
+      });
     }
 
     // 1. Find all modules for this course
