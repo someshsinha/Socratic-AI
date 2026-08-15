@@ -232,7 +232,7 @@ Queries supplementary YouTube lecture video IDs matching a lesson topic.
 ### 3.2. Health & Uptime Check
 Monitors service availability and database connectivity.
 
-- **URL**: `/api/health`
+- **URL**: `/health`
 - **Method**: `GET`
 - **Authentication**: Public
 

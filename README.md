@@ -13,7 +13,7 @@
 [![React 19](https://img.shields.io/badge/React_19-Vite_8-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-Express_5-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose_9-47a248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
-[![Google Gemini](https://img.shields.io/badge/AI_Engine-Gemini_2.5_Flash-4285f4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
+[![Google Gemini](https://img.shields.io/badge/AI_Engine-Gemini_3.5_Flash_Lite-4285f4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
 [![Auth0](https://img.shields.io/badge/Security-Auth0_JWT-eb5424?style=for-the-badge&logo=auth0&logoColor=white)](https://auth0.com)
 
 </div>
@@ -43,8 +43,8 @@ Generic AI chatbots generate unstructured, superficial walls of text without con
 - **Mobile-Responsive Code Controls**: Single-tap **Wrap / Scroll** toggle, line numbers, and one-click clipboard copying.
 
 ### 🎙️ 4. Audio Narration & Voice Learning
-- **AI Voice Synthesizer**: Text-to-Speech narration engine with conversational pacing and bilingual (English & Hinglish) accessibility.
-- **Interactive Audio Controller**: Floating, non-intrusive audio player with play/pause, scrub, playback rate, and auto-narration support.
+- **Conversational Hinglish Narration**: AI-powered Hinglish translation via Gemini, narrated through native browser speech synthesis.
+- **Interactive Audio Controller**: Floating, non-intrusive audio player with play/pause, scrub, playback rate modulation, and auto-narration support.
 
 ### 🧠 5. Socratic Knowledge Checks (MCQ)
 - **Active Recall Engine**: In-lesson multiple-choice questions with immediate explanatory feedback, correct/incorrect badges, and mathematical explanations.
@@ -78,7 +78,7 @@ flowchart TD
     end
 
     subgraph External["External Cloud & AI Services"]
-        Gemini[Google Gemini 2.5 Flash]
+        Gemini[Google Gemini 3.5 Flash Lite]
         YouTube[YouTube Data API v3]
         Auth0Cloud[Auth0 Identity Cloud]
         MongoCloud[(MongoDB Atlas)]
@@ -110,7 +110,7 @@ flowchart TD
 | **Code Highlighting** | `react-syntax-highlighter` (Prism.js / Tomorrow theme) | Syntax highlighting with mobile line-wrap toggle |
 | **Backend Core** | Node.js, Express.js 5 | Asynchronous RESTful microservice backend |
 | **Database & ODM** | MongoDB, Mongoose 9 | Relational document database with indexed population |
-| **Artificial Intelligence** | Google Gemini API (`@google/genai` / `gemini-2.5-flash`) | Structured JSON course and lesson synthesis |
+| **Artificial Intelligence** | Google Gemini API (`@google/genai` / `gemini-3.5-flash-lite`) | Structured JSON course and lesson synthesis |
 | **Video Discovery** | YouTube Data API v3, Axios | Contextual lecture discovery with responsive fallback frames |
 | **Security & Auth** | Auth0, `express-oauth2-jwt-bearer` | Stateless RS256 JWT authorization & user identity |
 
@@ -189,7 +189,7 @@ erDiagram
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `GET` | `/api/health` | Public | Uptime verification, database connection status, and model health |
+| `GET` | `/health` | Public | Uptime verification, database connection status, and model health |
 
 ---
 

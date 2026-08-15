@@ -36,7 +36,7 @@ graph TB
     subgraph StorageLayer ["Persistence & Cloud"]
         MongoDB[(MongoDB Atlas)]
         Auth0Cloud["Auth0 Identity Provider"]
-        GeminiAPI["Google Gemini 2.5 Flash"]
+        GeminiAPI["Google Gemini 3.5 Flash Lite"]
         YouTubeAPI["YouTube Data API v3"]
     end
 
@@ -95,7 +95,7 @@ sequenceDiagram
     actor User
     participant Client as React Client
     participant API as Express API
-    participant AI as Gemini 2.5 Flash
+    participant AI as Gemini 3.5 Flash Lite
     participant YouTube as YouTube API
     participant DB as MongoDB
 
@@ -151,8 +151,8 @@ flowchart LR
 
 To accommodate auditory and multimodal learners, Socratic AI includes an AI-driven Text-to-Speech narration pipeline.
 
-- **Content Summarization for Audio**: Raw markdown blocks (headers, code snippets, math formulas) are sanitized into clean, conversational prose suitable for speech synthesis.
-- **Bilingual Capabilities**: Supports both clean standard English and localized Hinglish for conversational conceptual clarity.
+- **AI-Powered Hinglish Translation**: Gemini (`gemini-3.5-flash-lite`) adapts lesson prose into natural spoken Hinglish (code-mixed Hindi & English in Latin script), preserving technical identifiers.
+- **Client-Side Speech Synthesis**: Spoken Hinglish text is narrated directly through native browser SpeechSynthesis APIs.
 - **Client-Side Media Controller**: A floating audio player (`NarrateButton.jsx`) provides full playback control (play, pause, scrub, speed modulation `0.75x - 2.0x`).
 
 ---
